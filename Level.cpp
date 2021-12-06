@@ -1,5 +1,6 @@
 #include "Vendor/tinyxml2.h"
 #include "Level.h"
+#include <typeinfo>
 
 using namespace tinyxml2;
 
@@ -51,14 +52,14 @@ bool Level::LvLparser(const char* path)
 
 	for (int i = 0; i < ObjectsCount; ++i)
 	{
-		if (!strcmp(xmlElem->Attribute("type"), "Player"))
+		if (!strcmp(xmlElem->Attribute("type"), "Player"))		//"Upcasting"
 		{
 			lvlobjects[i] = new Player;
 		}
-		//if (!strcmp(xmlElem->Attribute("type"), "NPC"))
-		//{
-		//	lvlobjects[i] = new NPC;
-		//}
+		if (!strcmp(xmlElem->Attribute("type"), "NPC"))
+		{
+			lvlobjects[i] = new NPC;
+		}
 		if (!strcmp(xmlElem->Attribute("type"), "Object"))
 		{
 			lvlobjects[i] = new GObject;
@@ -101,43 +102,106 @@ void Level::Update()
 
 void Level::Collision()
 {
+
 	Hitbox * hitbox;
-	for (int i = 0; i < ObjectsCount; ++i)
+
+	#pragma region Colision with Map
+	int tileWidth = layers[0].GetGridW();
+	int tileHeight = layers[0].GetGridH();
+
+	for (int i = 0; i < ObjectsCount; ++i)  //Check for colision around objects with map
 	{
 
 		if (!lvlobjects[i]->IsColliding()) {continue;}
 
+
 		hitbox = lvlobjects[i]->GetHitbox();
 
-		if (layers[0].GetGrid(hitbox->y / 32 +1, hitbox->x / 32) || layers[0].GetGrid(hitbox->y / 32 + 1, (hitbox->x + hitbox->w) / 32))
+
+		if (layers[0].GetGrid(((hitbox->y + 4) / tileHeight)+1, hitbox->x / tileWidth) || layers[0].GetGrid((hitbox->y + 4) / tileHeight + 1, (hitbox->x + hitbox->w) / tileWidth))
 		{
 			lvlobjects[i]->setFlagBelow(true);
 		}
 		else
 		{
-			lvlobjects[i]->setFlagBelow(false);  
+			lvlobjects[i]->setFlagBelow(false);   
 		}
 
-		//if (layers[0].GetGrid(hitbox->y / 32, hitbox->x / 32 + 1))
-		//{
-		//	lvlobjects[i]->setFlagRight(true);
-		//}
-		//else
-		//{
-		//	lvlobjects[i]->setFlagRight(false);
-		//}
+		if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth) || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth))
+		{
+			lvlobjects[i]->setFlagRight(true);
+		}
+		else
+		{
+			lvlobjects[i]->setFlagRight(false);
+		}
 
-		//if (layers[0].GetGrid((hitbox->y) / 32, hitbox->x / 32) || layers[0].GetGrid((hitbox->y + hitbox->h) / 32, hitbox->x / 32))
-		//{
-		//	lvlobjects[i]->setFlagLeft(true);
-		//}
-		//else
-		//{
-		//	lvlobjects[i]->setFlagLeft(false);
-		//}
+		if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x - 4) / tileWidth)  || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x - 4) / tileWidth))
+		{
+			lvlobjects[i]->setFlagLeft(true);
+		}
+		else
+		{
+			lvlobjects[i]->setFlagLeft(false);
+		}
 
-	
+		if (layers[0].GetGrid((hitbox->y / tileHeight), hitbox->x / tileWidth) || layers[0].GetGrid(hitbox->y / tileHeight, (hitbox->x + hitbox->w) / tileWidth))
+		{
+			lvlobjects[i]->setFlagAbove(true);
+		}
+		else
+		{
+			lvlobjects[i]->setFlagAbove(false);
+		}
 
 	}
+	#pragma endregion
+
+	//Hitbox* hitbox2;
+	#pragma region Colision Between Objects
+	for (int i = 0; i < ObjectsCount; ++i)  //Check for colision between objects
+	{
+		if (!lvlobjects[i]->IsCollidingWithObj()) { continue; }
+		for (int j = 0; j < ObjectsCount; ++j)
+		{
+			if (!lvlobjects[j]->IsCollidingWithObj() || (i == j)) { continue; }
+
+			InteractionBetween(lvlobjects[i], lvlobjects[j]);
+			
+		}
+	}
+	#pragma endregion
+
+}
+
+
+void Level::InteractionBetween(GObject* first, GObject* second)
+{
+	//DownCasting
+
+	if (first->GetObjectClassId() == 2 && second->GetObjectClassId() == 3 )
+	{
+		InteractionBetween(dynamic_cast <Player*>(first), dynamic_cast <NPC*>(second));
+		return;
+	}
+
+
+
+
+
+	
+}
+
+void Level::InteractionBetween(Player* player, NPC* npc)
+{
+	if (!player || !npc) { return; }
+
+
+}
+
+void Level::InteractionBetween(NPC* npc, Player* player)
+{
+	if (!npc || !player) { return; }
+
 
 }

@@ -19,7 +19,9 @@ protected:
 
 public:
 	AnimatedObj() : GObject(), frame({ nullptr, 0, 0, 50 }) , ObjState(0)
-	{}
+	{
+		ObjectClassId = 1;
+	}
 
 	//AnimatedObj(Uint16 type, Hitbox hitbox, Uint8 row = 0, Uint8 column = 0, int AnimSpeed = 50, SDL_RendererFlip flip = SDL_FLIP_NONE) : GObject(type, hitbox)
 	//{

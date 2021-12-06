@@ -5,11 +5,10 @@
 
 void AnimatedObj::Draw()
 {
-
-	if (ObjState > frame.aStates) ObjState = 0;
+	if (ObjState >= frame.aStates) { ObjState = 0; }
 
 	frame.aFrame = (SDL_GetTicks() / frame.AnimSpeed) % frame.States[ObjState];
-	TextureManager::GetInstance()->Draw(type, hitbox.x, hitbox.y, hitbox.w, hitbox.h, ObjState, frame.aFrame, flip);
+	TextureManager::GetInstance()->Draw(type, hitbox.x - Spacing, hitbox.y, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY, ObjState, frame.aFrame, flip);
 
 }
 
@@ -43,9 +42,8 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject)
 	for (int i = 0; i < frame.aStates; ++i)
 	{
 		std::getline(stream, value, ';');
-		frame.States[i] = std::stoi(value);
-
-		if (!stream.good()) break;
+		int converter = std::stoi(value);
+		frame.States[i] = (converter != 0) ? converter : 1;
 
 	}
 

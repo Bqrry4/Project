@@ -3,15 +3,14 @@
 #include "Input.h"
 
 
-
 const float Height = 70;
-const float TimetoApex = 0.8;
+const float TimetoApex = 0.4;
 
 float ySpeed = 2.0f * Height / TimetoApex;
 float Gravity = 2.0f * Height / TimetoApex / TimetoApex;
 
 float xSpeed = 238;
-float a = 0.05; //Coeficientul de alunecare
+float a = 0.1; //Coeficientul de alunecare
 
 
 void Player::Movement()
@@ -20,14 +19,13 @@ void Player::Movement()
     
 #pragma region Run/Walk
 
-    __int8 movement = (Input::GetInstance()->KeyState(SDL_SCANCODE_RIGHT) - Input::GetInstance()->KeyState(SDL_SCANCODE_LEFT));
+    __int8 movement = (Input::GetInstance()->KeyState(Key_Right_id) - Input::GetInstance()->KeyState(Key_Left_id));
     
     vx = a * movement * xSpeed + (1 - a) * vx;
     if (movement == 1) //Right
     {
         ObjState = (Uint16)PlayerState::Run;
         flip = SDL_FLIP_NONE;
-        if (colideRight) { vx = 0; }
     }
     if (movement == 0) //Repaos
     {
@@ -37,7 +35,15 @@ void Player::Movement()
     {
         ObjState = (Uint16)PlayerState::Run;
         flip = SDL_FLIP_HORIZONTAL;
-        if (colideLeft) { vx = 0; }
+    }
+
+    if (vx > 0)
+    {
+        if (collide.Right) { vx = 0; }
+    }
+    else
+    {
+        if (collide.Left) { vx = 0; }
     }
 
     hitbox.x += vx * dt;
@@ -47,24 +53,28 @@ void Player::Movement()
 
 #pragma region Jump
 
-    //SDL_Log("%d", colideBelow);
-    if (colideBelow)
+    if (collide.Below)
     {
         vy = 0;
     }
 
-    if (Input::GetInstance()->KeyState(SDL_SCANCODE_UP) && colideBelow)
+    if (Input::GetInstance()->KeyState(Key_Up_id) && collide.Below)
     {
         vy = -1 * ySpeed;
-        colideBelow = false;
+        collide.Below = false;
         ObjState = (Uint16)PlayerState::Jump;
     }
 
 
-
-    if (!colideBelow) //Fast grounding when key realeased
+    if (collide.Above)
     {
-        vy += (!Input::GetInstance()->KeyState(SDL_SCANCODE_UP) + Input::GetInstance()->KeyState(SDL_SCANCODE_DOWN) + 1) * Gravity/2 * dt;
+        vy = 0;
+        collide.Above = false;
+    }
+
+    if (!collide.Below) //Fast grounding when key realeased
+    {
+        vy += (!Input::GetInstance()->KeyState(Key_Up_id) + Input::GetInstance()->KeyState(Key_Down_id) + 1) * Gravity * dt;
     }
 
     hitbox.y += vy * dt;
@@ -80,14 +90,25 @@ void Player::Movement()
 void Player::Update()
 {
     Movement();
+    Atack();
+    Ability();
 }
 
 void Player::Atack()
 {
-
+    if(Input::GetInstance()->KeyState(Key_Atack_id))
+    { 
+        ObjState = (Uint16)PlayerState::Atack;
+    }
 }
-//void Player::Draw()
-//{
-//    frame.count = (SDL_GetTicks() / frame.AnimSpeed) % frame.aFrames;
-//    TextureManager::GetInstance()->Draw(type, hitbox.x, hitbox.y, hitbox.w, hitbox.h, (int)State, frame.count, flip);
-//}
+
+void Player::Ability()
+{
+    if (Input::GetInstance()->KeyState(Key_Ability_id))
+    {
+        ObjState = (Uint16)PlayerState::Ability;
+        std::swap(hitbox.x, hitbox.y);
+        //std::swap(vx, vy);
+    }
+}
+

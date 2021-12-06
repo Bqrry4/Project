@@ -1,9 +1,12 @@
 #pragma once
 #include "TileLayer.h"
-#include "Player.h"
+#include "Player1.h"
+#include "Player2.h"
+#include "NPC.h"
 
 class Level
 {
+
 	int mapWidth;
 	int mapHeigth;
 
@@ -24,5 +27,10 @@ public:
 	void Update();
 
 	void Collision();
+	
+	//void DownCasting(GObject*);
+	void InteractionBetween(GObject*, GObject*);
+	void InteractionBetween(Player*, NPC*);
+	void InteractionBetween(NPC*, Player*);
 };
 

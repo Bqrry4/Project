@@ -32,11 +32,11 @@ bool GObject::Parse(XMLElement* root, int iObject)
 	xmlElem->QueryFloatAttribute("y", &hitbox.y);
 	xmlElem->QueryIntAttribute("w", &hitbox.w);
 	xmlElem->QueryIntAttribute("h", &hitbox.h);
-	//xmlElem->QueryIntAttribute("TextureOffsetX", (int*)&TOffsetX);
-	//xmlElem->QueryIntAttribute("TextureOffsetY", (int*)&TOffsetY);
 
-
-	type = xmlElem->UnsignedAttribute("TexureId");
+	TOffsetX = xmlElem->UnsignedAttribute("TextureOffsetX");
+	TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
+	Spacing = xmlElem->UnsignedAttribute("Spacing");
+	type = xmlElem->UnsignedAttribute("TextureId");
 
 	TextureManager::GetInstance()->Load(xmlElem->Attribute("Texture"), type);
 
