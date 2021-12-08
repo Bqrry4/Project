@@ -35,6 +35,7 @@ public:
 
 	virtual void Movement();
 	virtual void Atack();
+	virtual void IsDiyng();
 
 	void Update();
 

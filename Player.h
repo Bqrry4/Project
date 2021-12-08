@@ -34,6 +34,7 @@ public:
 		collide.WithOthers = true;
 		HP = 100;
 		AP = 50;
+		AtRange = 5;
 
 	}
 	//Player(Uint16 type, Hitbox hitbox, Uint8 row = 0, Uint8 column = 0, int AnimSpeed = 50, SDL_RendererFlip flip = SDL_FLIP_NONE) : AnimatedObj(type, hitbox, row, column, AnimSpeed, flip)
@@ -48,8 +49,10 @@ public:
 
 	virtual void Update();
 	virtual void Movement();
+	virtual void Jump();
 	virtual void Atack();
 	virtual void Ability();
+	virtual void IsDiyng();
 	void Delete()
 	{
 

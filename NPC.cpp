@@ -40,7 +40,20 @@ void NPC::Atack()
 
 }
 
+void NPC::IsDiyng()
+{
+	if (HP < 0)
+	{
+		ObjState = (Uint16)NPCState::Dying;
+		collide.WithOthers = false;
+	}
+}
+
 void NPC::Update()
 {
-	Movement();
+	IsDiyng();
+	if(ObjState != (Uint16)NPCState::Dying)
+	{ 
+		Movement();
+	}
 }

@@ -3,6 +3,8 @@
 
 
 class AnimatedObj : public GObject {
+private:
+	int timeElapsed;
 protected:
 
 	struct Frame {		//Frame texture info
@@ -14,11 +16,10 @@ protected:
 
 	Uint16 ObjState;
 
-
-
+	bool AMode : 1; // When true, animation will get stuck on the last frame
 
 public:
-	AnimatedObj() : GObject(), frame({ nullptr, 0, 0, 50 }) , ObjState(0)
+	AnimatedObj() : GObject(), frame({ nullptr, 0, 0, 75 }) , ObjState(0), AMode(false), timeElapsed(0)
 	{
 		ObjectClassId = 1;
 	}
@@ -34,5 +35,7 @@ public:
 	virtual void Draw();
 	virtual void Update();
 	virtual bool Parse(XMLElement* root, int iObject = 0);
+
+	void NextFrame();
 };
 

@@ -103,61 +103,62 @@ void Level::Update()
 void Level::Collision()
 {
 
-	Hitbox * hitbox;
-
 	#pragma region Colision with Map
-	int tileWidth = layers[0].GetGridW();
-	int tileHeight = layers[0].GetGridH();
+	{//Stackframe
+		Hitbox* hitbox;
+		int tileWidth = layers[0].GetGridW();
+		int tileHeight = layers[0].GetGridH();
 
-	for (int i = 0; i < ObjectsCount; ++i)  //Check for colision around objects with map
-	{
-
-		if (!lvlobjects[i]->IsColliding()) {continue;}
-
-
-		hitbox = lvlobjects[i]->GetHitbox();
-
-
-		if (layers[0].GetGrid(((hitbox->y + 4) / tileHeight)+1, hitbox->x / tileWidth) || layers[0].GetGrid((hitbox->y + 4) / tileHeight + 1, (hitbox->x + hitbox->w) / tileWidth))
+		for (int i = 0; i < ObjectsCount; ++i)  //Check for colision around objects with map
 		{
-			lvlobjects[i]->setFlagBelow(true);
-		}
-		else
-		{
-			lvlobjects[i]->setFlagBelow(false);   
-		}
 
-		if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth) || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth))
-		{
-			lvlobjects[i]->setFlagRight(true);
-		}
-		else
-		{
-			lvlobjects[i]->setFlagRight(false);
-		}
+			if (!lvlobjects[i]->IsColliding()) { continue; }
 
-		if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x - 4) / tileWidth)  || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x - 4) / tileWidth))
-		{
-			lvlobjects[i]->setFlagLeft(true);
-		}
-		else
-		{
-			lvlobjects[i]->setFlagLeft(false);
-		}
 
-		if (layers[0].GetGrid((hitbox->y / tileHeight), hitbox->x / tileWidth) || layers[0].GetGrid(hitbox->y / tileHeight, (hitbox->x + hitbox->w) / tileWidth))
-		{
-			lvlobjects[i]->setFlagAbove(true);
-		}
-		else
-		{
-			lvlobjects[i]->setFlagAbove(false);
-		}
+			hitbox = lvlobjects[i]->GetHitbox();
 
+
+			if (layers[0].GetGrid(((hitbox->y + 4) / tileHeight) + 1, hitbox->x / tileWidth) || layers[0].GetGrid((hitbox->y + 4) / tileHeight + 1, (hitbox->x + hitbox->w) / tileWidth))
+			{
+				lvlobjects[i]->setFlagBelow(true);
+			}
+			else
+			{
+				lvlobjects[i]->setFlagBelow(false);
+			}
+
+			if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth) || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x + hitbox->w + 4) / tileWidth))
+			{
+				lvlobjects[i]->setFlagRight(true);
+			}
+			else
+			{
+				lvlobjects[i]->setFlagRight(false);
+			}
+
+			if (layers[0].GetGrid((hitbox->y + 4) / tileHeight, (hitbox->x - 4) / tileWidth) || layers[0].GetGrid((hitbox->y + hitbox->h - 4) / tileHeight, (hitbox->x - 4) / tileWidth))
+			{
+				lvlobjects[i]->setFlagLeft(true);
+			}
+			else
+			{
+				lvlobjects[i]->setFlagLeft(false);
+			}
+
+			if (layers[0].GetGrid((hitbox->y / tileHeight), hitbox->x / tileWidth) || layers[0].GetGrid(hitbox->y / tileHeight, (hitbox->x + hitbox->w) / tileWidth))
+			{
+				lvlobjects[i]->setFlagAbove(true);
+			}
+			else
+			{
+				lvlobjects[i]->setFlagAbove(false);
+			}
+
+		}
 	}
 	#pragma endregion
 
-	//Hitbox* hitbox2;
+
 	#pragma region Colision Between Objects
 	for (int i = 0; i < ObjectsCount; ++i)  //Check for colision between objects
 	{
@@ -185,7 +186,11 @@ void Level::InteractionBetween(GObject* first, GObject* second)
 		return;
 	}
 
-
+	if (first->GetObjectClassId() == 3 && second->GetObjectClassId() == 2)
+	{
+		InteractionBetween(dynamic_cast <NPC*>(first), dynamic_cast <Player*>(second));
+		return;
+	}
 
 
 
@@ -194,14 +199,75 @@ void Level::InteractionBetween(GObject* first, GObject* second)
 
 void Level::InteractionBetween(Player* player, NPC* npc)
 {
-	if (!player || !npc) { return; }
+	if (!player || !npc) { SDL_Log("Runtime error, when downcasting"); return; }
 
+	Hitbox* hb1 = player->GetHitbox();
+	Hitbox* hb2 = npc->GetHitbox();
 
+	if (player->ViewDirection() == Looking::Left) {
+		if (((hb2->x + hb2->w) > (hb1->x - player->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - player->AtackRange())) < player->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
+		{
+			if((hb2->x + hb2->w) - (hb1->x) < 1)
+			{
+				player->setFlagLeft(true);
+			}
+			if (player->IsAtacking())
+			{
+				npc->TakeDamage(player->DoDamage());
+			}
+
+		}
+
+	}
+	if (player->ViewDirection() == Looking::Right) {
+		if (((hb1->x + hb1->w + player->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + player->AtackRange()) - (hb2->x)) < player->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
+		{
+			if ((hb1->x + hb1->w) - (hb2->x) < 1)
+			{
+				player->setFlagRight(true);
+			}
+			if (player->IsAtacking())
+			{
+				npc->TakeDamage(player->DoDamage());
+			}
+
+		}
+	}
 }
 
 void Level::InteractionBetween(NPC* npc, Player* player)
 {
-	if (!npc || !player) { return; }
+	if (!npc || !player) { SDL_Log("Runtime error, when downcasting"); return; }
+	Hitbox* hb1 = npc->GetHitbox();
+	Hitbox* hb2 = player->GetHitbox();
 
+	if (npc->ViewDirection() == Looking::Left) {
+		if (((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < npc->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
+		{
+			if ((hb2->x + hb2->w) - (hb1->x) < 1)
+			{
+				npc->setFlagLeft(true);
+			}
+			if (npc->IsAtacking())
+			{
+				player->TakeDamage(npc->DoDamage());
+			}
 
+		}
+
+	}
+	if (npc->ViewDirection() == Looking::Right) {
+		if (((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
+		{
+			if ((hb1->x + hb1->w) - (hb2->x) < 1)
+			{
+				npc->setFlagRight(true);
+			}
+			if (npc->IsAtacking())
+			{
+				player->TakeDamage(npc->DoDamage());
+			}
+
+		}
+	}
 }
