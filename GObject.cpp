@@ -1,11 +1,11 @@
 #include "GObject.h"
 
-GObject::GObject(Uint16 type, Hitbox hitbox)
-{
-	this->hitbox = hitbox;
-	this->type = type;
-	//this->ObjState = ObjState;
-}
+//GObject::GObject(Uint16 type, Hitbox hitbox)
+//{
+//	this->hitbox = hitbox;
+//	this->type = type;
+//	//this->ObjState = ObjState;
+//}
 
 void GObject::Draw() //Need testing
 {
@@ -37,8 +37,6 @@ bool GObject::Parse(XMLElement* root, int iObject)
 	TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
 	Spacing = xmlElem->UnsignedAttribute("Spacing");
 	type = xmlElem->UnsignedAttribute("TextureId");
-
-	TextureManager::GetInstance()->Load(xmlElem->Attribute("Texture"), type);
 
 	flip = (SDL_RendererFlip)xmlElem->UnsignedAttribute("rotation");
 

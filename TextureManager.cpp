@@ -5,6 +5,11 @@ TextureManager* TextureManager::t_Instance = nullptr;
 
 bool TextureManager::Load(const char* path, Uint16 type)
 {
+	if (path == nullptr)
+	{
+		SDL_Log("Invalid texture path");
+		return false;
+	}
 
 	SDL_Surface* loadedSurface = IMG_Load(path);
 	if (!loadedSurface)

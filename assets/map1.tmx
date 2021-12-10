@@ -33,9 +33,18 @@
 </data>
  </layer>
 </map>
+<Textures>
+	<texture id="1" path="assets/Swordsman.png"></texture>
+	<texture id="2" path="assets/Archer.png"></texture>
+	<texture id="3" path="assets/Skeleton.png"></texture>
+	<texture id="4" path="assets/arrow.png"></texture>
+	<texture id="5" path="assets/fireball.png"></texture>
+</Textures>
 <GameObjects> 
-	<object type="Player" x="0" y="60" w="20" h="32" Texture="assets/Player.png" TextureId="1" rotation="0" states="5" frames="4;6;10;8;9" TextureOffsetX ="15" TextureOffsetY="3" Spacing="15" ></object>
-	<object type="NPC" x ="400" y="60" w="16" h="24" Texture="assets/Skeleton.png" TextureId="2" rotation="0" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" Spacing="12" ></object>
-	
+		<object type="Swordsman" x="0" y="60" w="14" h="30" TextureId="1" rotation="0" states="5" frames="4;6;10;8;9" TextureOffsetX ="13" TextureOffsetY="5" Spacing="13" ></object>
+		<object type="ShortRangeNPC" x ="400" y="60" w="16" h="24" TextureId="3" rotation="1" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" Spacing="12" ></object>
+		
+		<Projectile w="20" h="3" vx="50" TextureId="3" states="1" frames="1" ></Projectile>
+		<Projectile w="16" h="9" vx="55" TextureId="4" states="1" frames="3" TextureOffsetX ="2" Spacing="2"></Projectile>
 </GameObjects>
 </Level>

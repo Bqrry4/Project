@@ -2,6 +2,7 @@
 #include "Level.h"
 #include <typeinfo>
 
+
 using namespace tinyxml2;
 
 
@@ -9,9 +10,9 @@ bool Level::LvLparser(const char* path)
 {
 	XMLDocument lvlDocument;
 
-
 	if (lvlDocument.LoadFile(path))  ///ERROR HANDLING DONT FORGET!
 	{
+
 		SDL_Log("Loading XML file error, %d", lvlDocument.ErrorID());
 		return false;
 	}
@@ -25,13 +26,11 @@ bool Level::LvLparser(const char* path)
 	mapRoot->QueryIntAttribute("height", &mapWidth);
 
 
+	//parsing TileLayers
 	XMLElement* xmlElem = mapRoot->FirstChildElement("layer");
 	for (TileLayerCount; xmlElem != NULL; ++TileLayerCount, xmlElem = xmlElem->NextSiblingElement());
 	
 	layers = new TileLayer[TileLayerCount];
-
-
-	//parsing TileLayers
 	
 	for (int i = 0; i < TileLayerCount; ++i)
 	{
@@ -41,24 +40,48 @@ bool Level::LvLparser(const char* path)
 		}
 	}
 
+	//Loading object textures
+	XMLElement* TexRoot = root->FirstChildElement("Textures");
+
+	xmlElem = TexRoot->FirstChildElement("texture");
+	while (xmlElem != NULL)
+	{
+		if (!TextureManager::GetInstance()->Load(xmlElem->Attribute("path"), xmlElem->IntAttribute("id"))) { return false; }
+
+		xmlElem = xmlElem->NextSiblingElement();
+	}
+
+
+
+
 	//parsing GameObjects
 	XMLElement* ObjRoot = root->FirstChildElement("GameObjects");
 	
 	xmlElem = ObjRoot->FirstChildElement("object");
-	for (ObjectsCount; xmlElem != NULL; ++ObjectsCount, xmlElem = xmlElem->NextSiblingElement());
+	for (ObjectsCount; xmlElem != NULL; ++ObjectsCount, xmlElem = xmlElem->NextSiblingElement("object"));
+
 
 	lvlobjects = new GObject*[ObjectsCount];
 	xmlElem = ObjRoot->FirstChildElement("object");
 
 	for (int i = 0; i < ObjectsCount; ++i)
 	{
-		if (!strcmp(xmlElem->Attribute("type"), "Player"))		//"Upcasting"
+		if (!strcmp(xmlElem->Attribute("type"), "Swordsman"))		//"Upcasting"
 		{
-			lvlobjects[i] = new Player;
+			lvlobjects[i] = new Swordsman;
 		}
-		if (!strcmp(xmlElem->Attribute("type"), "NPC"))
+		if (!strcmp(xmlElem->Attribute("type"), "Archer"))		//"Upcasting"
 		{
-			lvlobjects[i] = new NPC;
+			lvlobjects[i] = new Archer;
+		}
+
+		if (!strcmp(xmlElem->Attribute("type"), "ShortRangeNPC"))
+		{
+			lvlobjects[i] = new ShortRangeNPC;
+		}
+		if (!strcmp(xmlElem->Attribute("type"), "LongRangeNPC"))
+		{
+			lvlobjects[i] = new LongRangeNPC;
 		}
 		if (!strcmp(xmlElem->Attribute("type"), "Object"))
 		{
@@ -163,6 +186,7 @@ void Level::Collision()
 	for (int i = 0; i < ObjectsCount; ++i)  //Check for colision between objects
 	{
 		if (!lvlobjects[i]->IsCollidingWithObj()) { continue; }
+
 		for (int j = 0; j < ObjectsCount; ++j)
 		{
 			if (!lvlobjects[j]->IsCollidingWithObj() || (i == j)) { continue; }
@@ -179,7 +203,6 @@ void Level::Collision()
 void Level::InteractionBetween(GObject* first, GObject* second)
 {
 	//DownCasting
-
 	if (first->GetObjectClassId() == 2 && second->GetObjectClassId() == 3 )
 	{
 		InteractionBetween(dynamic_cast <Player*>(first), dynamic_cast <NPC*>(second));
@@ -203,7 +226,7 @@ void Level::InteractionBetween(Player* player, NPC* npc)
 
 	Hitbox* hb1 = player->GetHitbox();
 	Hitbox* hb2 = npc->GetHitbox();
-
+	SDL_Log("Aici");
 	if (player->ViewDirection() == Looking::Left) {
 		if (((hb2->x + hb2->w) > (hb1->x - player->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - player->AtackRange())) < player->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
 		{
@@ -244,11 +267,9 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 	if (npc->ViewDirection() == Looking::Left) {
 		if (((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < npc->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
 		{
-			if ((hb2->x + hb2->w) - (hb1->x) < 1)
-			{
-				npc->setFlagLeft(true);
-			}
-			if (npc->IsAtacking())
+			npc->WantToAtack(true);
+
+			if(npc->IsAtacking())
 			{
 				player->TakeDamage(npc->DoDamage());
 			}
@@ -259,10 +280,7 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 	if (npc->ViewDirection() == Looking::Right) {
 		if (((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
 		{
-			if ((hb1->x + hb1->w) - (hb2->x) < 1)
-			{
-				npc->setFlagRight(true);
-			}
+			npc->WantToAtack(true);
 			if (npc->IsAtacking())
 			{
 				player->TakeDamage(npc->DoDamage());

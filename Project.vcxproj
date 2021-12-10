@@ -146,42 +146,46 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedObj.cpp" />
+    <ClCompile Include="Archer.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Game.h" />
     <ClCompile Include="GObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="LongRangeNPC.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Player1.cpp" />
-    <ClCompile Include="Player2.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="ProjectileObject.cpp" />
+    <ClCompile Include="ShortRangeNPC.cpp" />
+    <ClCompile Include="Swordsman.cpp" />
     <ClCompile Include="SystemTimer.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="TileLayer.cpp" />
     <ClCompile Include="Vendor\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="assets\hello_world.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="AnimatedObj.h" />
+    <ClInclude Include="Archer.h" />
     <ClInclude Include="GObject.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="LongRangeNPC.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Player1.h" />
-    <ClInclude Include="Player2.h" />
-    <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="ProjectileObject.h" />
+    <ClInclude Include="ShortRangeNPC.h" />
+    <ClInclude Include="Swordsman.h" />
     <ClInclude Include="SystemTimer.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="TileLayer.h" />
     <ClInclude Include="Vendor\tinyxml2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\map1.tmx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

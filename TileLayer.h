@@ -36,7 +36,7 @@ public:
 	//virtual void Update();
 	virtual void Draw();	
 
-	bool Parse(XMLElement* root, int iLayer = 0);
+ 	bool Parse(XMLElement* root, int iLayer = 0);
 
 	inline Uint16 GetGrid(Uint16 i, Uint16 j) { return TileIdMap[i][j]; }
 	inline int GetGridW() { return tileW; }

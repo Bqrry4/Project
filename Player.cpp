@@ -108,35 +108,35 @@ void Player::Update()
         Movement();
     }
 
-    Atack();
     Ability();
+    //SDL_Log("%d", HP);
 }
 
-void Player::Atack()
-{
-
-    if (ObjState != (Uint16)PlayerState::Atack) {
-
-        if (Input::GetInstance()->KeyState(Key_Atack_id))
-        {
-            ObjState = (Uint16)PlayerState::Atack;
-            AtackingMode = true;
-            AMode = true;
-            frame.aFrame = 0;
-        }
-    }
-    else
-    {   
-        if(frame.aFrame == frame.States[ObjState] - 1) 
-        {
-            AMode = false;
-            ObjState = (Uint16)PlayerState::Repaos;
-        }
-
-        AtackingMode = false;
-     
-    }
-}
+//void Player::Atack()
+//{
+//
+//    //if (ObjState != (Uint16)PlayerState::Atack) {
+//
+//    //    if (Input::GetInstance()->KeyState(Key_Atack_id))
+//    //    {
+//    //        ObjState = (Uint16)PlayerState::Atack;
+//    //        AtackingMode = true;
+//    //        AMode = true;
+//    //        frame.aFrame = 0;
+//    //    }
+//    //}
+//    //else
+//    //{   
+//    //    if(frame.aFrame == frame.States[ObjState] - 1) 
+//    //    {
+//    //        AMode = false;
+//    //        ObjState = (Uint16)PlayerState::Repaos;
+//    //    }
+//
+//    //    AtackingMode = false;
+//    // 
+//    //}
+//}
 
 void Player::Ability()
 {

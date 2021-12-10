@@ -1,8 +1,10 @@
 #pragma once
 #include "TileLayer.h"
-#include "Player1.h"
-#include "Player2.h"
-#include "NPC.h"
+#include "Swordsman.h"
+#include "Archer.h"
+#include "ShortRangeNPC.h"
+#include "LongRangeNPC.h"
+
 
 class Level
 {

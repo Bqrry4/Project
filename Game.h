@@ -5,7 +5,7 @@
 
 class Game {
 	static Game* g_Instance;
-	bool IsRunning;
+	bool IsRunning : 1;
 	SDL_Window* window;
 	SDL_Renderer* render;
 
