@@ -59,6 +59,7 @@ void Game::Quit()
 
 void Game::Events()
 {
+
 	Input::GetInstance()->Read();
 }
 

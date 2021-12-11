@@ -24,7 +24,7 @@ bool Level::LvLparser(const char* path)
 
 	mapRoot->QueryIntAttribute("width", &mapHeigth);
 	mapRoot->QueryIntAttribute("height", &mapWidth);
-
+	camera = new Camera(mapHeigth, mapWidth);
 
 	//parsing TileLayers
 	XMLElement* xmlElem = mapRoot->FirstChildElement("layer");
@@ -66,24 +66,27 @@ bool Level::LvLparser(const char* path)
 
 	for (int i = 0; i < ObjectsCount; ++i)
 	{
-		if (!strcmp(xmlElem->Attribute("type"), "Swordsman"))		//"Upcasting"
+		const char* type = xmlElem->Attribute("type");
+		if (type == nullptr) { SDL_Log("Bad stream. Cannot properly read from file."); return false; }
+
+		if (!strcmp(type, "Swordsman"))		//"Upcasting"
 		{
 			lvlobjects[i] = new Swordsman;
 		}
-		if (!strcmp(xmlElem->Attribute("type"), "Archer"))		//"Upcasting"
+		if (!strcmp(type, "Archer"))		//"Upcasting"
 		{
 			lvlobjects[i] = new Archer;
 		}
 
-		if (!strcmp(xmlElem->Attribute("type"), "ShortRangeNPC"))
+		if (!strcmp(type, "ShortRangeNPC"))
 		{
 			lvlobjects[i] = new ShortRangeNPC;
 		}
-		if (!strcmp(xmlElem->Attribute("type"), "LongRangeNPC"))
+		if (!strcmp(type, "LongRangeNPC"))
 		{
 			lvlobjects[i] = new LongRangeNPC;
 		}
-		if (!strcmp(xmlElem->Attribute("type"), "Object"))
+		if (!strcmp(type, "Object"))
 		{
 			lvlobjects[i] = new GObject;
 		}
@@ -102,12 +105,12 @@ void Level::Draw()
 {
 	for (int i = 0; i < TileLayerCount; ++i)
 	{ 
-		layers[i].Draw();
+		layers[i].Draw(camera->GetCameraPos());
 	}
 
 	for (int i = 0; i < ObjectsCount; ++i)
 	{
-		lvlobjects[i]->Draw();
+		lvlobjects[i]->Draw(camera->GetCameraPos());
 	}
 
 }
@@ -119,7 +122,7 @@ void Level::Update()
 	{
 		lvlobjects[i]->Update();
 	}
-
+	camera->Update(lvlobjects[0]->GetHitbox());
 }
 
 
@@ -226,7 +229,7 @@ void Level::InteractionBetween(Player* player, NPC* npc)
 
 	Hitbox* hb1 = player->GetHitbox();
 	Hitbox* hb2 = npc->GetHitbox();
-	SDL_Log("Aici");
+
 	if (player->ViewDirection() == Looking::Left) {
 		if (((hb2->x + hb2->w) > (hb1->x - player->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - player->AtackRange())) < player->AtackRange() && ((hb1->y + hb1->h) - hb2->y) > 4)
 		{

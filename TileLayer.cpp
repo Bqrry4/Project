@@ -45,18 +45,23 @@ bool TileLayer::Parse(XMLElement* root, int iLayer)
 
 
 
-void TileLayer::Draw()
+void TileLayer::Draw(SDL_Point* CameraTranslate)
 {
 	int row, column, Heigth = Game::GetInstance()->ScreenHeigth() / tileH, Width = Game::GetInstance()->ScreenWidth() / tileW;
 
-	for (int id = 0; id < Heigth; ++id)
+	int id = CameraTranslate->y / tileH;
+	Heigth += id;
+	for (id; id < Heigth; ++id)
 	{
-		for (int jd = 0; jd < Width; ++jd)
+		int jd = CameraTranslate->x / tileW -1;
+
+		int Width_d = ((Width + jd +2) > LayerWidth) ? (LayerWidth) : (Width + jd + 2);
+		for (jd; jd < Width_d; ++jd)
 		{
 			if (TileIdMap[id][jd] == 0) continue;
 			column = TileIdMap[id][jd] % assetColumn -1;
 			row = TileIdMap[id][jd] / assetColumn;
-			TextureManager::GetInstance()->Draw(0, offSetX + jd* tileW, offSetY + id * tileH, tileW, tileH, row, column);
+			TextureManager::GetInstance()->Draw(0, offSetX + jd* tileW, offSetY + id * tileH, tileW, tileH, row, column, SDL_FLIP_NONE, CameraTranslate);
 
 		}
 	}

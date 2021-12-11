@@ -9,7 +9,7 @@ class IObject {
 
 public:
 	virtual void Update() = 0;
-	virtual void Draw() = 0;
+	virtual void Draw(SDL_Point* CameraTranslate) = 0;
 	//virtual void Delete() = 0;
 	virtual bool Parse(XMLElement*, int) = 0;
 	//virtual void Colision() = 0;
@@ -77,10 +77,10 @@ public:
 		collide.LeftObj = false;
 	
 	}
-	GObject(Uint16 type, Hitbox box);
+	//GObject(Uint16 type, Hitbox box);
 
 	virtual void Update();
-	virtual void Draw();
+	virtual void Draw(SDL_Point* CameraTranslate = nullptr);
 	//virtual void Delete();
 	virtual bool Parse(XMLElement* root, int iObject = 0);
 

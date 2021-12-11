@@ -31,8 +31,13 @@ bool TextureManager::Load(const char* path, Uint16 type)
 	return true;
 }
 
-void TextureManager::Draw(Uint16 type, int x, int y, int w, int h, int row, int column, SDL_RendererFlip flip) //Pentru imagine statica, valorile {row, column} sunt implicite
+void TextureManager::Draw(Uint16 type, int x, int y, int w, int h, int row, int column, SDL_RendererFlip flip, SDL_Point* CameraTranslate) //Pentru imagine statica, valorile {row, column} sunt implicite
 {
+	if (CameraTranslate != nullptr)
+	{
+		x = x - CameraTranslate->x;
+		y = y - CameraTranslate->y;
+	}
 	SDL_Rect srcRect = { w* column, h*row, w, h };
 	SDL_Rect destRect = { x , y, w, h };
 	SDL_RenderCopyEx(Game::GetInstance()->GetRender(), TextureMap[type], &srcRect, &destRect, 0, nullptr, flip);

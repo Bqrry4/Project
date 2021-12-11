@@ -29,7 +29,7 @@ public:
 
 	inline size_t TextureMapSize() { return TextureMap.size(); }
 	bool Load(const char* path, Uint16 type);
-	void Draw(Uint16 type, int x, int y, int w, int h, int row = 0, int frame = 0, SDL_RendererFlip flip = SDL_FLIP_NONE); 
+	void Draw(Uint16 type, int x, int y, int w, int h, int row = 0, int frame = 0, SDL_RendererFlip flip = SDL_FLIP_NONE, SDL_Point* CameraTranslate = nullptr);
 	void Clean();
 	
 };

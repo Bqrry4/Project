@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera.h"
 #include "TileLayer.h"
 #include "Swordsman.h"
 #include "Archer.h"
@@ -11,7 +12,7 @@ class Level
 
 	int mapWidth;
 	int mapHeigth;
-
+	Camera* camera;
 
 	TileLayer* layers; //First layer is the Physic layer
 	int TileLayerCount;
@@ -19,9 +20,9 @@ class Level
 	GObject** lvlobjects;
 	int ObjectsCount;
 public:
-	Level() : mapWidth(0), mapHeigth(0), layers(nullptr), TileLayerCount(0), lvlobjects(nullptr), ObjectsCount(0)
+	Level() : mapWidth(0), mapHeigth(0), camera(nullptr), layers(nullptr), TileLayerCount(0), lvlobjects(nullptr), ObjectsCount(0)
 	{}
-	~Level() { delete[]layers; delete[]lvlobjects; } //VErifica
+	~Level() { delete[]layers; delete[]lvlobjects; delete camera; } //VErifica
 
 
 	bool LvLparser(const char* path);

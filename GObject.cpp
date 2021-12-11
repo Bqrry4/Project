@@ -7,9 +7,9 @@
 //	//this->ObjState = ObjState;
 //}
 
-void GObject::Draw() //Need testing
+void GObject::Draw(SDL_Point* CameraTranslate) //Need testing
 {
-	TextureManager::GetInstance()->Draw(type, hitbox.x, hitbox.y, hitbox.w + 2*TOffsetX, hitbox.h+2*TOffsetY, flip);
+	TextureManager::GetInstance()->Draw(type, hitbox.x, hitbox.y, hitbox.w + 2*TOffsetX, hitbox.h+2*TOffsetY, 0, 0, flip, CameraTranslate);
 }
 
 void GObject::Update()

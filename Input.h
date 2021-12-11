@@ -5,6 +5,10 @@ class Input {
 	static Input* i_Instance;
 
 	const Uint8* currentKeyStates;
+	SDL_Point mouse;
+
+	bool MouseClick;
+
 	Input();
 public:
 	~Input()
@@ -18,5 +22,8 @@ public:
 	void UpdateKeyStates();
 
 	bool KeyState(SDL_Scancode key);
+
+	bool MouseClicked() { return MouseClick; }
+	SDL_Point* MousePosition();
 
 };

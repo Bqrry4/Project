@@ -3,9 +3,10 @@
 
 Input* Input::i_Instance = nullptr;
 
-Input::Input()
+Input::Input() : MouseClick(false)
 {
 	currentKeyStates = SDL_GetKeyboardState(NULL);
+	SDL_GetMouseState(&mouse.x, &mouse.y);
 }
 
 void Input::Read()
@@ -23,6 +24,16 @@ void Input::Read()
 	case SDL_KEYUP:
 		UpdateKeyStates();
 		break;
+	case SDL_MOUSEBUTTONUP:
+		MouseClick = false;
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		MouseClick = true;
+		break;
+	case SDL_MOUSEMOTION:
+		SDL_GetMouseState(&mouse.x, &mouse.y);
+		break;
+
 	}
 }
 
@@ -35,4 +46,9 @@ void Input::UpdateKeyStates()
 bool Input::KeyState(SDL_Scancode key)
 {
 	return currentKeyStates[key];
+}
+
+SDL_Point* Input::MousePosition()
+{
+	return &mouse;
 }

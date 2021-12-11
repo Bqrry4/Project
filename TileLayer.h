@@ -34,7 +34,7 @@ public:
 			
 	}
 	//virtual void Update();
-	virtual void Draw();	
+	virtual void Draw(SDL_Point* CameraTranslate = nullptr);
 
  	bool Parse(XMLElement* root, int iLayer = 0);
 

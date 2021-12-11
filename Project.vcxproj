@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\OOP\Project\SDL2\SDL2_image-2.0.5\include;D:\OOP\Project\SDL2\SDL2-2.0.16\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OOP\Project\SDL2\SDL2_image-2.0.5\lib\x64;D:\OOP\Project\SDL2\SDL2-2.0.16\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\OOP\Project\SDL2\SDL2_ttf-2.0.15\include;D:\OOP\Project\SDL2\SDL2_image-2.0.5\include;D:\OOP\Project\SDL2\SDL2-2.0.16\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\OOP\Project\SDL2\SDL2-2.0.16\lib\x64;D:\OOP\Project\SDL2\SDL2_image-2.0.5\lib\x64;D:\OOP\Project\SDL2\SDL2_ttf-2.0.15\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,6 +147,8 @@
   <ItemGroup>
     <ClCompile Include="AnimatedObj.cpp" />
     <ClCompile Include="Archer.cpp" />
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Game.h" />
@@ -155,6 +157,7 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="LongRangeNPC.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProjectileObject.cpp" />
@@ -168,12 +171,15 @@
   <ItemGroup>
     <ClInclude Include="AnimatedObj.h" />
     <ClInclude Include="Archer.h" />
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="GObject.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Layer.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LongRangeNPC.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ProjectileObject.h" />

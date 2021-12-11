@@ -35,12 +35,12 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject)
 	return true;
 }
 
-void AnimatedObj::Draw()
+void AnimatedObj::Draw(SDL_Point* CameraTranslate)
 {
 	if (ObjState >= frame.aStates) { ObjState = 0; }
 	NextFrame();
 
-	TextureManager::GetInstance()->Draw(type, hitbox.x - Spacing, hitbox.y, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY, ObjState, frame.aFrame, flip);
+	TextureManager::GetInstance()->Draw(type, hitbox.x - Spacing, hitbox.y, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY, ObjState, frame.aFrame, flip, CameraTranslate);
 
 }
 
