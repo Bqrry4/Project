@@ -3,8 +3,8 @@
 
 void Camera::Update(Hitbox* target)
 {
-	int w = Game::GetInstance()->ScreenWidth();
-	int h = Game::GetInstance()->ScreenHeigth();
+	int w = Game::GetInstance().ScreenWidth();
+	int h = Game::GetInstance().ScreenHeigth();
 
 	//Check colision with target and update Position
 	if (target->x < Position.x + w / 3 && Position.x > 0)

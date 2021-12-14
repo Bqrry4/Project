@@ -29,7 +29,7 @@ public:
 	{}
 	~TileLayer()
 	{
-		for (int i = 0; i < LayerWidth; ++i) delete[]TileIdMap[i];
+		for (int i = 0; i < LayerHeigth; ++i) delete[]TileIdMap[i];
 		delete[]TileIdMap;
 			
 	}

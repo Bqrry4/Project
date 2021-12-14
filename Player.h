@@ -17,6 +17,11 @@ class Player : public AnimatedObj , public Entity
 	float vx;
 	float vy;
 
+	static float a;
+	static float xSpeed;
+	static float ySpeed;
+	static float Gravity;
+
 protected:
 	SDL_Scancode Key_Up_id;
 	SDL_Scancode Key_Down_id;

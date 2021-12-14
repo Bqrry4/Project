@@ -1,18 +1,23 @@
 #pragma once
 //#include "TextureManager.h"
 #include "Level.h"
-
+#include "Menu.h"
 
 class Game {
-	static Game* g_Instance;
+
 	bool IsRunning : 1;
 	SDL_Window* window;
 	SDL_Renderer* render;
 
-	Game() : IsRunning(false), window(nullptr), render(nullptr), level(nullptr), screenWidth(0), screenHeigth(0)
+	Game() : IsRunning(false), window(nullptr), render(nullptr), level(nullptr), menu(nullptr), screenWidth(0), screenHeigth(0)
 	{}
-	Game(const Game&);
-	Game& operator=(const Game&) {}
+	Game(const Game&) = delete;
+	Game& operator=(const Game&) = delete;
+	Game(Game&&) = delete;
+	Game& operator=(Game&&) = delete;
+
+
+	Menu* menu;
 
 	Level* level;
 
@@ -22,13 +27,11 @@ class Game {
 public:
 	~Game()
 	{
-		SDL_Log("!des");
 		delete level;
-		delete g_Instance;
-		g_Instance = nullptr;
+		delete menu;
 	}
 
-	inline static Game* GetInstance() { if (!g_Instance) g_Instance = new Game; return g_Instance; } //Using Singleton
+	inline static Game& GetInstance() { static Game instance; return instance; } 	//Using Meyers's Singleton
 	inline SDL_Renderer* GetRender() { return render; }
 	inline bool Running() { return IsRunning; }
 	inline int ScreenWidth() { return screenWidth; }
@@ -43,7 +46,11 @@ public:
 	void Render();
 	void Update();
 
+	//Menues functions;
+
+	void MainMenuLoop();
+	void PuaseMenu();
+
+
 
 };
-
-

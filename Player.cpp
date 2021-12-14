@@ -6,11 +6,11 @@
 const float Height = 70;
 const float TimetoApex = 0.4;
 
-float ySpeed = 2.0f * Height / TimetoApex;
-float Gravity = 2.0f * Height / TimetoApex / TimetoApex;
+float Player::ySpeed = 2.0f * Height / TimetoApex;
+float Player::Gravity = 2.0f * Height / TimetoApex / TimetoApex;
 
-float xSpeed = 238;
-float a = 0.1; //Coeficientul de alunecare
+float Player::xSpeed = 238;
+float Player::a = 0.1; //Coeficientul de alunecare
 
 
 void Player::Movement()

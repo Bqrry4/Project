@@ -16,7 +16,7 @@ void Input::Read()
 
 	switch (event.type) {
 	case SDL_QUIT:
-		Game::GetInstance()->Quit();
+		Game::GetInstance().Quit();
 		break;
 	case SDL_KEYDOWN:
 		UpdateKeyStates();
@@ -25,10 +25,10 @@ void Input::Read()
 		UpdateKeyStates();
 		break;
 	case SDL_MOUSEBUTTONUP:
-		MouseClick = false;
+		MouseClick = true;
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		MouseClick = true;
+		MouseClick = false;
 		break;
 	case SDL_MOUSEMOTION:
 		SDL_GetMouseState(&mouse.x, &mouse.y);
@@ -51,4 +51,13 @@ bool Input::KeyState(SDL_Scancode key)
 SDL_Point* Input::MousePosition()
 {
 	return &mouse;
+}
+bool Input::MouseClicked()
+{ 
+	if (MouseClick)
+	{
+		MouseClick = !MouseClick;
+		return !MouseClick;
+	}
+	return MouseClick;
 }

@@ -11,6 +11,9 @@ bool Archer::Parse(XMLElement* root, int iObject)
     }
 
     if(!arrow.Parse(root, xmlElem->UnsignedAttribute("projectileType"))) { return false; }
+
+
+    return true;
 }
 
 void Archer::Atack()

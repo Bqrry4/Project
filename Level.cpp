@@ -2,8 +2,12 @@
 #include "Level.h"
 #include <typeinfo>
 
-
 using namespace tinyxml2;
+
+Uint16 Level::Levelid = 0;
+bool Level::GameMode = false;
+Uint16 Level::PlayerClass = 0;
+bool Level::IsLoaded = false;
 
 
 bool Level::LvLparser(const char* path)
@@ -46,7 +50,7 @@ bool Level::LvLparser(const char* path)
 	xmlElem = TexRoot->FirstChildElement("texture");
 	while (xmlElem != NULL)
 	{
-		if (!TextureManager::GetInstance()->Load(xmlElem->Attribute("path"), xmlElem->IntAttribute("id"))) { return false; }
+		if (!TextureManager::GetInstance().Load(xmlElem->Attribute("path"), xmlElem->IntAttribute("id"))) { return false; }
 
 		xmlElem = xmlElem->NextSiblingElement();
 	}
@@ -97,6 +101,7 @@ bool Level::LvLparser(const char* path)
 
 		xmlElem = xmlElem->NextSiblingElement();
 	}
+	IsLoaded = true;
 	return true;
 }
 

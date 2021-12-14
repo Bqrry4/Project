@@ -23,7 +23,7 @@ public:
 
 	bool KeyState(SDL_Scancode key);
 
-	bool MouseClicked() { return MouseClick; }
+	bool MouseClicked();
 	SDL_Point* MousePosition();
 
 };
