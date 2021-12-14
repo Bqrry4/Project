@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include "Input.h"
 #include "Menu.h"
+#include "SystemTimer.h"
 
 
 void Game::Init(const char *title, int x, int y, int w, int h, Uint32 flags)
@@ -38,12 +39,12 @@ void Game::Init(const char *title, int x, int y, int w, int h, Uint32 flags)
 		return;
 	}
 
+	menu = new Menu * [2];
 
-	//menu = new Menu((SDL_Texture*) nullptr, buttons);
-	menu = new MainMenu;
-	menu->SwitchTrigger();
+	menu[0] = new MainMenu;
+	menu[0]->SwitchTrigger();
+	menu[1] = new PauseMenu;
 
-	TextureManager::GetInstance().Load("assets/tiles.png", 0);
 	level = new Level;
 	//level->LvLparser("assets/map1.tmx");
 }
@@ -62,9 +63,9 @@ void Game::Clean()
 void Game::Quit()
 {
 	IsRunning = false;
-	if (menu->IsTriggered())
+	if (menu[0]->IsTriggered())
 	{
-		menu->SwitchTrigger();
+		menu[0]->SwitchTrigger();
 	}
 	
 }
@@ -97,11 +98,11 @@ void Game::Update()
 
 void Game::MainMenuLoop()
 {
-	while (menu->IsTriggered())
+	while (menu[0]->IsTriggered())
 	{
 		Input::GetInstance()->Read();
-		menu->Update();
-		menu->Draw();
+		menu[0]->Update();
+		menu[0]->Draw();
 	}
 
 	if (!Level::IsLoaded)
@@ -128,6 +129,18 @@ void Game::MainMenuLoop()
 
 void Game::PuaseMenu()
 {
-	SDL_Log("bla bla");
+	if (Input::GetInstance()->KeyState(SDL_SCANCODE_ESCAPE))
+	{
+		menu[1]->SwitchTrigger();
+	}
+	int delta;
+	while (menu[1]->IsTriggered())
+	{
+		SystemTimer::GetInstance()->Ticks();
+		Input::GetInstance()->Read();
+		menu[1]->Update();
+		menu[1]->Draw();
+	}
+
 }
 

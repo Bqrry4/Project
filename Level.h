@@ -31,6 +31,8 @@ public:
 
 
 	bool LvLparser(const char* path);
+	//bool LvlUnload();
+
 	void Draw();
 	void Update();
 

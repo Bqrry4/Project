@@ -20,6 +20,5 @@ public:
 
 	inline float GetDt() { return delta_time; }
 	inline static SystemTimer* GetInstance() { if (!st_Instance) st_Instance = new SystemTimer; return st_Instance; } //Using Singleton
-
 	void Ticks();
 };

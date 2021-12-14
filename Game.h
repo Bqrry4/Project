@@ -17,7 +17,7 @@ class Game {
 	Game& operator=(Game&&) = delete;
 
 
-	Menu* menu;
+	Menu** menu;
 
 	Level* level;
 
@@ -28,6 +28,8 @@ public:
 	~Game()
 	{
 		delete level;
+		delete menu[0];
+		delete menu[1];
 		delete menu;
 	}
 

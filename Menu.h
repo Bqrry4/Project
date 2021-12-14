@@ -49,3 +49,23 @@ public:
 	static void Button9();
 
 };
+
+
+class PauseMenu : public Menu
+{
+	static Uint16 option1;
+
+	SDL_Texture* Background;
+
+public:
+	PauseMenu();
+	~PauseMenu();
+
+	void Update();
+	void Draw();
+
+	static void Button1();
+	static void Button2();
+	static void Button3();
+
+};

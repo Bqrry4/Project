@@ -5,6 +5,8 @@
 Uint16 MainMenu::option1 = 0;
 Uint16 MainMenu::option2 = 0;
 
+Uint16 PauseMenu::option1 = 0;
+
 MainMenu::MainMenu() : Menu()
 {
 	buttonsCount = 9;
@@ -36,8 +38,6 @@ MainMenu::~MainMenu()
 	}
 	delete buttons;
 }
-
-
 
 void MainMenu::Update()
 {
@@ -101,7 +101,7 @@ void MainMenu::Draw()
 
 }
 
-#pragma region Buttons function
+#pragma region Buttons function MainMenu
 
 void MainMenu::Button1()
 {
@@ -119,45 +119,119 @@ void MainMenu::Button3()
 {
 	Game::GetInstance().Quit();
 }
-
 void MainMenu::Button4()
 {
 	Level::Levelid = 1;
 	option1 = 2;
 	option2 = 2;
 }
-
 void MainMenu::Button5()
 {
 	Level::Levelid = 2;
 	option1 = 2;
 	option2 = 2;
 }
-
 void MainMenu::Button6()
 {
 	Level::Levelid = 3;
 	option1 = 2;
 	option2 = 2;
 }
-
 void MainMenu::Button7()
 {
 	Level::PlayerClass = 1;
 	option1 = 3;
 }
-
 void MainMenu::Button8()
 {
 	Level::PlayerClass = 2;
 	option1 = 3;
 }
-
 void MainMenu::Button9()
 {
 	Level::GameMode = 0;
 	Level::Levelid = 0;
 	option1 = 4;
+}
+
+#pragma endregion
+
+
+PauseMenu::PauseMenu() : Menu()
+{
+	buttonsCount = 3;
+	buttons = new Button * [buttonsCount];
+
+	buttons[0] = new Button({ 262, 48, 500, 160 }, "Return", &Button1, true);
+	buttons[1] = new Button({ 262, 304, 500, 160 }, "MainMenu", &Button2, true);
+	buttons[2] = new Button({ 262, 560, 500, 160 }, "EXIT", &Button3, true);
+
+	Background = TextureManager::GetInstance().Load("assets/menu_background.png");	//Check for missing file!!!!
+	SDL_SetTextureBlendMode(Background, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureAlphaMod(Background, 0xBB);
+
+}
+
+PauseMenu::~PauseMenu()
+{
+	for (int i = 0; i < buttonsCount; ++i)
+	{
+		delete buttons[i];
+	}
+	delete buttons;
+}
+
+void PauseMenu::Update()
+{
+	for (int i = 0; i < buttonsCount; ++i)
+	{
+		buttons[i]->Update();
+	}
+	switch (option1)
+	{
+		case 0:
+			break;
+		case 1:
+			SwitchTrigger();
+			option1 = 0;
+			break;
+		case 2:
+			
+
+			break;
+	}
+}
+
+void PauseMenu::Draw()
+{
+	//SDL_SetRenderDrawColor(Game::GetInstance().GetRender(), 0xFF, 0xFF, 0xFF, 0xFF);
+	//SDL_RenderClear(Game::GetInstance().GetRender());
+	//TextureManager::GetInstance().Draw(Background, 0, 0, 1024, 768);
+	for (int i = 0; i < buttonsCount; ++i)
+	{
+		buttons[i]->Draw();
+	}
+
+	SDL_RenderPresent(Game::GetInstance().GetRender());
+
+}
+
+#pragma region Buttons function PauseMenu
+
+void PauseMenu::Button1()
+{
+	option1 = 1;
+}
+void PauseMenu::Button2()
+{
+	//Level::GameMode = true;
+	//option1 = 1;
+	//option2 = 1;
+}
+void PauseMenu::Button3()
+{
+	Game::GetInstance().Quit();
+	//SwitchTrigger();
 }
 
 #pragma endregion

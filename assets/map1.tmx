@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Level>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="3072" height="768" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="1">
+<map width="3072" height="768" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="1">
  <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32" tilecount="630" columns="35">
   <image source="tiles.png" width="1120" height="576"/>
  </tileset>
@@ -34,6 +34,7 @@
  </layer>
 </map>
 <Textures>
+	<texture id="0" path="assets/tiles.png"></texture>
 	<texture id="1" path="assets/Swordsman.png"></texture>
 	<texture id="2" path="assets/Archer.png"></texture>
 	<texture id="3" path="assets/Skeleton.png"></texture>
@@ -42,6 +43,7 @@
 </Textures>
 <GameObjects> 
 		<object type="Swordsman" x="0" y="60" w="14" h="30" TextureId="1" rotation="0" states="5" frames="4;6;10;8;9" TextureOffsetX ="13" TextureOffsetY="5" Spacing="13" ></object>
+		
 		<object type="ShortRangeNPC" x ="400" y="60" w="16" h="24" TextureId="3" rotation="1" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" Spacing="12" ></object>
 		
 		<Projectile w="20" h="3" vx="50" TextureId="3" states="1" frames="1" ></Projectile>
