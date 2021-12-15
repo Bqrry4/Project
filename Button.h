@@ -3,27 +3,29 @@
 
 class Button
 {
+	int id;
+	Uint32 EventID;
+
 	SDL_Texture* texture;
 	SDL_Rect Position;
 
 	bool IsActive;
 
-	void(*fun)(void);
-
 public:
-	Button() : texture(nullptr), Position({0,0,0,0}), IsActive(false), fun(nullptr)
+	Button() : id(0), texture(nullptr), Position({0,0,0,0}), IsActive(false), EventID(0)
 	{}
-	Button(SDL_Rect Position, const char* label, void(*fun)(void), bool active);
+	Button(int id, SDL_Rect Position, const char* label, bool active, Uint32 EventID);
 	~Button()
 	{
 		SDL_DestroyTexture(texture);
 	}
 
 	inline void SwitchActiveMode() { IsActive = !IsActive; }
+	inline void SetActiveMode(bool value) { IsActive = value; }
 
-	void CheckForPress();
-
+	void CheckForPress(SDL_Point* mouse, bool press);
 	void Draw();
-	void Update();
+
+	//void Update();
 };
 

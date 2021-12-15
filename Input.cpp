@@ -1,12 +1,10 @@
 #include "Input.h"
 #include "Game.h"
 
-Input* Input::i_Instance = nullptr;
-
-Input::Input() : MouseClick(false)
+Input::Input()
 {
 	currentKeyStates = SDL_GetKeyboardState(NULL);
-	SDL_GetMouseState(&mouse.x, &mouse.y);
+	//SDL_GetMouseState(&mouse.x, &mouse.y);
 }
 
 void Input::Read()
@@ -24,16 +22,15 @@ void Input::Read()
 	case SDL_KEYUP:
 		UpdateKeyStates();
 		break;
-	case SDL_MOUSEBUTTONUP:
-		MouseClick = true;
-		break;
-	case SDL_MOUSEBUTTONDOWN:
-		MouseClick = false;
-		break;
-	case SDL_MOUSEMOTION:
-		SDL_GetMouseState(&mouse.x, &mouse.y);
-		break;
-
+	//case SDL_MOUSEBUTTONUP:
+	//	MouseClick = true;
+	//	break;
+	//case SDL_MOUSEBUTTONDOWN:
+	//	MouseClick = false;
+	//	break;
+	//case SDL_MOUSEMOTION:
+	//	SDL_GetMouseState(&mouse.x, &mouse.y);
+	//	break;
 	}
 }
 
@@ -48,16 +45,16 @@ bool Input::KeyState(SDL_Scancode key)
 	return currentKeyStates[key];
 }
 
-SDL_Point* Input::MousePosition()
-{
-	return &mouse;
-}
-bool Input::MouseClicked()
-{ 
-	if (MouseClick)
-	{
-		MouseClick = !MouseClick;
-		return !MouseClick;
-	}
-	return MouseClick;
-}
+//SDL_Point* Input::MousePosition()
+//{
+//	return &mouse;
+//}
+//bool Input::MouseClicked()
+//{ 
+//	if (MouseClick)
+//	{
+//		MouseClick = !MouseClick;
+//		return !MouseClick;
+//	}
+//	return MouseClick;
+//}

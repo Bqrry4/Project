@@ -1,29 +1,34 @@
 #include "Menu.h"
 #include "Game.h"
+#include "SystemTimer.h"
 
+Menu::Menu() : buttons(nullptr), buttonsCount(0), MenuTrigger(false), mouse({0,0}), MouseClick(false)
+{
+	EventId = SDL_RegisterEvents(1); //Verifica
+	if (EventId == ((Uint32)-1))
+	{
+		SDL_Log("Error event register");
+	}
+}
 
-Uint16 MainMenu::option1 = 0;
-Uint16 MainMenu::option2 = 0;
-
-Uint16 PauseMenu::option1 = 0;
 
 MainMenu::MainMenu() : Menu()
 {
 	buttonsCount = 9;
 	buttons = new Button * [buttonsCount];
 
-	buttons[0] = new Button({ 262, 48, 500, 160 }, "SOLO", &Button1, true);
-	buttons[1] = new Button({ 262, 304, 500, 160 }, "DUO", &Button2, true);
-	buttons[2] = new Button({ 262, 560, 500, 160 }, "EXIT", &Button3, true);
+	buttons[0] = new Button(1, { 262, 48, 500, 160 }, "SOLO", true, EventId);
+	buttons[1] = new Button(2, { 262, 304, 500, 160 }, "DUO", true, EventId);
+	buttons[2] = new Button(3, { 262, 560, 500, 160 }, "EXIT", true, EventId);
 
-	buttons[3] = new Button({ 262, 48, 500, 160 }, "Level1", &Button4, false);
-	buttons[4] = new Button({ 262, 304, 500, 160 }, "Level2", &Button5, false);
-	buttons[5] = new Button({ 262, 560, 500, 160 }, "Level3", &Button6, false);
+	buttons[3] = new Button(4, { 262, 48, 500, 160 }, "Level1", false, EventId);
+	buttons[4] = new Button(5, { 262, 304, 500, 160 }, "Level2", false, EventId);
+	buttons[5] = new Button(6, { 262, 560, 500, 160 }, "Level3", false, EventId);
 
-	buttons[6] = new Button({ 262, 142, 500, 160 }, "Swordsman", &Button7, false);
-	buttons[7] = new Button({ 262, 466, 500, 160 }, "Archer", &Button8, false);
+	buttons[6] = new Button(7, { 262, 142, 500, 160 }, "Swordsman", false, EventId);
+	buttons[7] = new Button(8, { 262, 466, 500, 160 }, "Archer", false, EventId);
 
-	buttons[8] = new Button({ 890, 660, 80, 80 }, "<", &Button9, false);
+	buttons[8] = new Button(9, { 890, 660, 80, 80 }, "<", false, EventId);
 
 	Background = TextureManager::GetInstance().Load("assets/menu_background.png");	//Check for missing file!!!!
 
@@ -39,51 +44,107 @@ MainMenu::~MainMenu()
 	delete buttons;
 }
 
+void Menu::Events()
+{
+	SDL_Event event;
+	while (SDL_PollEvent(&event) != 0)
+	{
+		switch (event.type)
+		{
+		case SDL_QUIT:
+			Game::GetInstance().Quit();
+			SwitchTrigger();
+			break;
+		case SDL_MOUSEBUTTONUP:
+			MouseClick = true;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			MouseClick = false;
+			break;
+		case SDL_MOUSEMOTION:
+			SDL_GetMouseState(&mouse.x, &mouse.y);
+			break;
+		default:
+			if (event.type == EventId)
+				ActionHandler(&event);
+			break;
+		}
+	}
+}
+
 void MainMenu::Update()
 {
+	Events();
+
 	for (int i = 0; i < buttonsCount; ++i)
 	{
-		buttons[i]->Update();
+		buttons[i]->CheckForPress(&mouse, MouseClick);
 	}
+	MouseClick = false;
+}
 
-	switch (option1)
+void MainMenu::ActionHandler(SDL_Event* event)
+{
+	switch (event->user.code) //Buttons functionality
 	{
-	case 0:
-		break;
 	case 1:
+		Level::GameMode = false;
 		for (int i = 0; i < 6; ++i)
 			buttons[i]->SwitchActiveMode();
-		buttons[8]->SwitchActiveMode();
-		option1 = 0;
+		buttons[8]->SetActiveMode(true);
 		break;
 	case 2:
-		for (int i = 3; i < 8; ++i)
+		Level::GameMode = true;
+		for (int i = 0; i < 6; ++i)
 			buttons[i]->SwitchActiveMode();
-		option1 = 0;
+		buttons[8]->SetActiveMode(true);
 		break;
 	case 3:
-		for (int i = 6; i < 8; ++i)
-			buttons[i]->SwitchActiveMode();
-		MenuTrigger = false;
-		option1 = 0;
+		Game::GetInstance().Quit();
+		SwitchTrigger();
 		break;
 	case 4:
-		buttons[8]->SwitchActiveMode();
+		Level::Levelid = 1;
+		for (int i = 3; i < 8; ++i)
+			buttons[i]->SwitchActiveMode();
+		break;
+	case 5:
+		Level::Levelid = 2;
+		for (int i = 3; i < 8; ++i)
+			buttons[i]->SwitchActiveMode();
+		break;
+	case 6:
+		Level::Levelid = 3;
+		for (int i = 3; i < 8; ++i)
+			buttons[i]->SwitchActiveMode();
+		break;
+	case 7:
+		Level::PlayerClass = 1;
+		for (int i = 6; i < 8; ++i)
+			buttons[i]->SwitchActiveMode();
 		for (int i = 0; i < 3; ++i)
 			buttons[i]->SwitchActiveMode();
-		if (option2 == 1)
-		{
-			for (int i = 3; i < 6; ++i)
-				buttons[i]->SwitchActiveMode();
-		}
-		if (option2 == 2)
-		{
-			for (int i = 6; i < 8; ++i)
-				buttons[i]->SwitchActiveMode();
-		}
-		option1 = 0;
+		buttons[8]->SetActiveMode(false);
+		SwitchTrigger();
+		break;
+	case 8:
+		Level::PlayerClass = 2;
+		for (int i = 6; i < 8; ++i)
+			buttons[i]->SwitchActiveMode();
+		for (int i = 0; i < 3; ++i)
+			buttons[i]->SwitchActiveMode();
+		buttons[8]->SetActiveMode(false);
+		SwitchTrigger();
+		break;
+	case 9:
+		for (int i = 3; i < 8; i++)
+			buttons[i]->SetActiveMode(false);
+		for (int i = 0; i < 3; ++i)
+			buttons[i]->SetActiveMode(true);
+		buttons[8]->SetActiveMode(false);
 		break;
 	}
+
 }
 
 void MainMenu::Draw()
@@ -101,74 +162,16 @@ void MainMenu::Draw()
 
 }
 
-#pragma region Buttons function MainMenu
-
-void MainMenu::Button1()
-{
-	Level::GameMode = false;
-	option1 = 1;
-	option2 = 1;
-}	
-void MainMenu::Button2()
-{
-	Level::GameMode = true;
-	option1 = 1;
-	option2 = 1;
-}
-void MainMenu::Button3()
-{
-	Game::GetInstance().Quit();
-}
-void MainMenu::Button4()
-{
-	Level::Levelid = 1;
-	option1 = 2;
-	option2 = 2;
-}
-void MainMenu::Button5()
-{
-	Level::Levelid = 2;
-	option1 = 2;
-	option2 = 2;
-}
-void MainMenu::Button6()
-{
-	Level::Levelid = 3;
-	option1 = 2;
-	option2 = 2;
-}
-void MainMenu::Button7()
-{
-	Level::PlayerClass = 1;
-	option1 = 3;
-}
-void MainMenu::Button8()
-{
-	Level::PlayerClass = 2;
-	option1 = 3;
-}
-void MainMenu::Button9()
-{
-	Level::GameMode = 0;
-	Level::Levelid = 0;
-	option1 = 4;
-}
-
-#pragma endregion
 
 
-PauseMenu::PauseMenu() : Menu()
+PauseMenu::PauseMenu() : Menu(), timeElapsed(0)
 {
 	buttonsCount = 3;
 	buttons = new Button * [buttonsCount];
 
-	buttons[0] = new Button({ 262, 48, 500, 160 }, "Return", &Button1, true);
-	buttons[1] = new Button({ 262, 304, 500, 160 }, "MainMenu", &Button2, true);
-	buttons[2] = new Button({ 262, 560, 500, 160 }, "EXIT", &Button3, true);
-
-	Background = TextureManager::GetInstance().Load("assets/menu_background.png");	//Check for missing file!!!!
-	SDL_SetTextureBlendMode(Background, SDL_BLENDMODE_BLEND);
-	SDL_SetTextureAlphaMod(Background, 0xBB);
+	buttons[0] = new Button(1, { 262, 48, 500, 160 }, "Resume", true, EventId);
+	buttons[1] = new Button(2, { 262, 304, 500, 160 }, "MainMenu", true, EventId);
+	buttons[2] = new Button(3, { 262, 560, 500, 160 }, "Exit", true, EventId);
 
 }
 
@@ -183,23 +186,47 @@ PauseMenu::~PauseMenu()
 
 void PauseMenu::Update()
 {
+	Events();
+
+	if (timeElapsed < 500)
+	{
+		timeElapsed += SystemTimer::GetInstance()->GetDt() * 1000;
+	}
+	else
+	{ 
+		const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
+		{
+			SDL_Log("Well3");
+			SwitchTrigger();
+			timeElapsed = 0;
+		}
+	}
+
 	for (int i = 0; i < buttonsCount; ++i)
 	{
-		buttons[i]->Update();
+		buttons[i]->CheckForPress(&mouse, MouseClick);
 	}
-	switch (option1)
-	{
-		case 0:
-			break;
-		case 1:
-			SwitchTrigger();
-			option1 = 0;
-			break;
-		case 2:
-			
+	MouseClick = false;
+}
 
-			break;
+void PauseMenu::ActionHandler(SDL_Event* event)
+{
+	switch (event->user.code) //Buttons functionality
+	{
+	case 1:
+		SwitchTrigger();
+		break;
+	case 2:
+		Game::GetInstance().SwitchToMainLoop();
+		SwitchTrigger();
+		break;
+	case 3:
+		Game::GetInstance().Quit();
+		SwitchTrigger(); 
+		break;
 	}
+
 }
 
 void PauseMenu::Draw()
@@ -215,23 +242,3 @@ void PauseMenu::Draw()
 	SDL_RenderPresent(Game::GetInstance().GetRender());
 
 }
-
-#pragma region Buttons function PauseMenu
-
-void PauseMenu::Button1()
-{
-	option1 = 1;
-}
-void PauseMenu::Button2()
-{
-	//Level::GameMode = true;
-	//option1 = 1;
-	//option2 = 1;
-}
-void PauseMenu::Button3()
-{
-	Game::GetInstance().Quit();
-	//SwitchTrigger();
-}
-
-#pragma endregion

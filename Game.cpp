@@ -46,7 +46,6 @@ void Game::Init(const char *title, int x, int y, int w, int h, Uint32 flags)
 	menu[1] = new PauseMenu;
 
 	level = new Level;
-	//level->LvLparser("assets/map1.tmx");
 }
 
 void Game::Clean()
@@ -63,17 +62,12 @@ void Game::Clean()
 void Game::Quit()
 {
 	IsRunning = false;
-	if (menu[0]->IsTriggered())
-	{
-		menu[0]->SwitchTrigger();
-	}
-	
 }
 
 void Game::Events()
 {
 
-	Input::GetInstance()->Read();
+	Input::GetInstance().Read();
 }
 
 void Game::Render()
@@ -100,7 +94,6 @@ void Game::MainMenuLoop()
 {
 	while (menu[0]->IsTriggered())
 	{
-		Input::GetInstance()->Read();
 		menu[0]->Update();
 		menu[0]->Draw();
 	}
@@ -127,20 +120,25 @@ void Game::MainMenuLoop()
 	}
 }
 
-void Game::PuaseMenu()
+void Game::PuaseMenuLoop()
 {
-	if (Input::GetInstance()->KeyState(SDL_SCANCODE_ESCAPE))
+	if (Input::GetInstance().KeyState(SDL_SCANCODE_ESCAPE))
 	{
+		SDL_Log("Well2");
 		menu[1]->SwitchTrigger();
 	}
-	int delta;
+
 	while (menu[1]->IsTriggered())
 	{
 		SystemTimer::GetInstance()->Ticks();
-		Input::GetInstance()->Read();
 		menu[1]->Update();
 		menu[1]->Draw();
 	}
 
+}
+
+void Game::SwitchToMainLoop()
+{
+	menu[0]->SwitchTrigger();
 }
 

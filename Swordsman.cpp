@@ -11,7 +11,7 @@ void Swordsman::Atack()
     }
     if (ObjState != (Uint16)PlayerState::Atack) {
 
-        if (Input::GetInstance()->KeyState(Key_Atack_id))
+        if (Input::GetInstance().KeyState(Key_Atack_id))
         {
             ObjState = (Uint16)PlayerState::Atack;
             AMode = true;

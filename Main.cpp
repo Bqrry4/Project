@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	while (Game::GetInstance().Running())
 	{
 		Game::GetInstance().MainMenuLoop();
-		Game::GetInstance().PuaseMenu();
+		Game::GetInstance().PuaseMenuLoop();
 		Game::GetInstance().Events();
 		Game::GetInstance().Update();
 		Game::GetInstance().Render();

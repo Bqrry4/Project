@@ -26,9 +26,7 @@ class TextureManager {
 
 public:
 	~TextureManager()
-	{
-		
-	}
+	{}
 
 	inline static TextureManager& GetInstance() { static TextureManager instance; return instance; }
 

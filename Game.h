@@ -51,7 +51,8 @@ public:
 	//Menues functions;
 
 	void MainMenuLoop();
-	void PuaseMenu();
+	void PuaseMenuLoop();
+	void SwitchToMainLoop();
 
 
 

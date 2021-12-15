@@ -17,7 +17,7 @@ void Player::Movement()
 {
     float dt = SystemTimer::GetInstance()->GetDt();
 
-    __int8 movement = (Input::GetInstance()->KeyState(Key_Right_id) - Input::GetInstance()->KeyState(Key_Left_id));
+    __int8 movement = (Input::GetInstance().KeyState(Key_Right_id) - Input::GetInstance().KeyState(Key_Left_id));
     
     vx = a * movement * xSpeed + (1 - a) * vx;
 
@@ -68,7 +68,7 @@ void Player::Jump()
         ObjState = (Uint16)PlayerState::Repaos;
     }
     if(ObjState != (Uint16)PlayerState::Jump){
-        if (Input::GetInstance()->KeyState(Key_Up_id) && collide.Below)
+        if (Input::GetInstance().KeyState(Key_Up_id) && collide.Below)
         {
             vy = -1 * ySpeed;
             collide.Below = false;
@@ -94,7 +94,7 @@ void Player::Jump()
 
     if (!collide.Below) //Fast grounding when key realeased
     {
-        vy += (!Input::GetInstance()->KeyState(Key_Up_id) + Input::GetInstance()->KeyState(Key_Down_id) + 1) * Gravity * dt;
+        vy += (!Input::GetInstance().KeyState(Key_Up_id) + Input::GetInstance().KeyState(Key_Down_id) + 1) * Gravity * dt;
     }
 
     hitbox.y += vy * dt;
@@ -140,7 +140,7 @@ void Player::Update()
 
 void Player::Ability()
 {
-    if (Input::GetInstance()->KeyState(Key_Ability_id))
+    if (Input::GetInstance().KeyState(Key_Ability_id))
     {
         ObjState = (Uint16)PlayerState::Ability;
         std::swap(hitbox.x, hitbox.y);

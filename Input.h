@@ -2,29 +2,29 @@
 #include <SDL.h>
 
 class Input {
-	static Input* i_Instance;
-
 	const Uint8* currentKeyStates;
-	SDL_Point mouse;
+	//SDL_Point mouse;
 
-	bool MouseClick;
+	//bool MouseClick;
 
 	Input();
+	Input(const Input&) = delete;
+	Input& operator=(const Input&) = delete;
+	Input(Input&&) = delete;
+	Input& operator=(Input&&) = delete;
 
 	void UpdateKeyStates();
 public:
 	~Input()
-	{
-		delete i_Instance;
-	}
+	{}
 
-	inline static Input* GetInstance() { if (!i_Instance) i_Instance = new Input; return i_Instance; } //Using Singleton
+	inline static Input& GetInstance() { static Input instance; return instance; }
 
 	void Read();
 
 	bool KeyState(SDL_Scancode key);
 
-	bool MouseClicked();
-	SDL_Point* MousePosition();
+	//bool MouseClicked();
+	//SDL_Point* MousePosition();
 
 };
