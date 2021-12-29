@@ -7,25 +7,15 @@
 //	//this->ObjState = ObjState;
 //}
 
-void GObject::Draw(SDL_Point* CameraTranslate) //Need testing
+bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
-	TextureManager::GetInstance().Draw(type, hitbox.x, hitbox.y, hitbox.w + 2*TOffsetX, hitbox.h+2*TOffsetY, 0, 0, flip, CameraTranslate);
-}
-
-void GObject::Update()
-{
-
-
-
-}
-
-bool GObject::Parse(XMLElement* root, int iObject)
-{
-
-	XMLElement* xmlElem = root->FirstChildElement("object");
-	for (int i = 0; i < iObject; ++i)
+	if (xmlElem == nullptr)
 	{
-		xmlElem = xmlElem->NextSiblingElement();
+		xmlElem = root->FirstChildElement("object");
+		for (int i = 0; i < iObject; ++i)
+		{
+			xmlElem = xmlElem->NextSiblingElement();
+		}
 	}
 
 	xmlElem->QueryFloatAttribute("x", &hitbox.x);
@@ -41,4 +31,22 @@ bool GObject::Parse(XMLElement* root, int iObject)
 	flip = (SDL_RendererFlip)xmlElem->UnsignedAttribute("rotation");
 
 	return true;
+}
+
+void GObject::Draw(const SDL_Point* CameraTranslate) //Need testing
+{
+	TextureManager::GetInstance().Draw(type, { 0,0, hitbox.w + 2 * TOffsetX , hitbox.h + 2 * TOffsetY }, { (int)hitbox.x, (int)hitbox.y,hitbox.w + 2 * TOffsetX , hitbox.h + 2 * TOffsetY }, flip, CameraTranslate);
+}
+
+void GObject::TranslateTo(SDL_Point point)
+{
+	hitbox.x = point.x;
+	hitbox.y = point.y;
+}
+
+void GObject::Update()
+{
+
+
+
 }

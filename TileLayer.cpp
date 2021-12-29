@@ -6,12 +6,7 @@
 
 bool TileLayer::Parse(XMLElement* root, int iLayer)
 {
-	root->QueryIntAttribute("tilewidth", &tileW);
-	root->QueryIntAttribute("tileheight", &tileH);
-
-
-	XMLElement* xmlElem = root->FirstChildElement("tileset");
-	xmlElem->QueryIntAttribute("columns", &assetColumn);
+	XMLElement* xmlElem = root->FirstChildElement("layer");
 
 	xmlElem = root->FirstChildElement("layer");
 	for (int i = 0; i < iLayer; ++i)
@@ -19,8 +14,12 @@ bool TileLayer::Parse(XMLElement* root, int iLayer)
 		xmlElem = xmlElem->NextSiblingElement();
 	}
 
+	texture = TextureManager::Load(xmlElem->Attribute("texture")); // Check for nullptr
+	xmlElem->QueryIntAttribute("columns", &assetColumn);
 	xmlElem->QueryIntAttribute("width", &LayerWidth);
 	xmlElem->QueryIntAttribute("height", &LayerHeigth);
+	xmlElem->QueryIntAttribute("tilewidth", &tileW);
+	xmlElem->QueryIntAttribute("tileheight", &tileH);
 
 	XMLElement* xmlData = xmlElem->FirstChildElement("data");
 	std::string matrix(xmlData->GetText());
@@ -39,18 +38,18 @@ bool TileLayer::Parse(XMLElement* root, int iLayer)
 			if (!stream.good()) break;
 		}
 	}
-
 	return true;		
 }
 
 
 
-void TileLayer::Draw(SDL_Point* CameraTranslate)
+void TileLayer::Draw(const SDL_Point* CameraTranslate)
 {
-	int row, column, Heigth = Game::GetInstance().ScreenHeigth() / tileH, Width = Game::GetInstance().ScreenWidth() / tileW;
+	int row, column, Heigth = Game::ScreenHeigth() / tileH, Width = Game::ScreenWidth() / tileW;
 
 	int id = CameraTranslate->y / tileH;
-	Heigth += id;
+
+	Heigth = ((Heigth + id + 2) > LayerHeigth) ? (LayerHeigth) : (Heigth + id + 2);
 	for (id; id < Heigth; ++id)
 	{
 		int jd = CameraTranslate->x / tileW -1;
@@ -61,8 +60,7 @@ void TileLayer::Draw(SDL_Point* CameraTranslate)
 			if (TileIdMap[id][jd] == 0) continue;
 			column = TileIdMap[id][jd] % assetColumn -1;
 			row = TileIdMap[id][jd] / assetColumn;
-			TextureManager::GetInstance().Draw((Uint16)0, offSetX + jd* tileW, offSetY + id * tileH, tileW, tileH, row, column, SDL_FLIP_NONE, CameraTranslate);
-
+			TextureManager::Draw(texture, { tileW * column, tileH * row, tileW, tileH }, { offSetX + jd * tileW, offSetY + id * tileH, tileW, tileH }, SDL_FLIP_NONE, CameraTranslate);
 		}
 	}
 }

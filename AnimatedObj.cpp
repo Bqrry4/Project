@@ -4,16 +4,19 @@
 #include "AnimatedObj.h"
 #include "SystemTimer.h"
 
-bool AnimatedObj::Parse(XMLElement* root, int iObject)
+bool AnimatedObj::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
 
-	if (!GObject::Parse(root, iObject)) { return false; }
-
-	XMLElement* xmlElem = root->FirstChildElement("object");
-	for (int i = 0; i < iObject; ++i)
+	if (xmlElem == nullptr)
 	{
-		xmlElem = xmlElem->NextSiblingElement();
+		xmlElem = root->FirstChildElement("object");
+		for (int i = 0; i < iObject; ++i)
+		{
+			xmlElem = xmlElem->NextSiblingElement();
+		}
 	}
+
+	if (!GObject::Parse(root, iObject, xmlElem)) { return false; }
 
 
 	frame.aStates = xmlElem->UnsignedAttribute("states");
@@ -35,13 +38,12 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject)
 	return true;
 }
 
-void AnimatedObj::Draw(SDL_Point* CameraTranslate)
+void AnimatedObj::Draw(const SDL_Point* CameraTranslate)
 {
 	if (ObjState >= frame.aStates) { ObjState = 0; }
 	NextFrame();
 
-	TextureManager::GetInstance().Draw(type, hitbox.x - Spacing, hitbox.y, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY, ObjState, frame.aFrame, flip, CameraTranslate);
-
+	TextureManager::GetInstance().Draw(type, { (hitbox.w + 2 * TOffsetX) * frame.aFrame, (hitbox.h + 2 * TOffsetY) * ObjState, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY }, { (int)hitbox.x - TOffsetX, (int)hitbox.y - TOffsetY, hitbox.w + 2 * TOffsetX, hitbox.h + 2 * TOffsetY }, flip, CameraTranslate);
 }
 
 void AnimatedObj::Update()

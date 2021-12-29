@@ -13,16 +13,16 @@ enum class NPCState {
 
 class NPC : public AnimatedObj, public Entity
 {
-	float vx;
+	float vx, vy;
 
 	float LastXPosition;
-	int deplasament;
+	int deplasament, deplDt;
 
 protected:
 	bool AtackIntention : 1;
 
 public:
-	NPC() : AnimatedObj(), vx(0), deplasament(0), AtackIntention(false)
+	NPC() : AnimatedObj(), vx(0), vy(0), LastXPosition(0), deplasament(0), deplDt(0), AtackIntention(false)
 	{
 		ObjectClassId = 3;
 
@@ -30,15 +30,11 @@ public:
 		collide.WithOthers = true;
 		HP = rand() % 20 + 100;
 
-
-		RandDeplasament();
-		LastXPosition = hitbox.x;
-
 		AP = 50;
 		AtRange = 12;
 	}
 
-	void RandDeplasament() { deplasament = abs((rand() % 5 )* (int)hitbox.x + (int)hitbox.x); }
+	void RandDeplasament() { deplasament = abs((rand() % 5) * (int)hitbox.x /* + (int)hitbox.x*/); }
 	void WantToAtack(bool value) { AtackIntention = value;}
 
 	virtual void Movement();

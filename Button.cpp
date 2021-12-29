@@ -14,7 +14,7 @@ Button::Button(int id, SDL_Rect Position, const char* label, bool active, Uint32
 
 
 	texture = TextureManager::GetInstance().Load(label, { 0xFF, 0xFF, 0xFF, 0xFF}, Position); //Check for nullptr
-	texture = TextureManager::GetInstance().FillTransparent(texture, { 0, 0, 0, 0xFF }, Position);
+	texture = TextureManager::FillTransparent(texture, { 0, 0, 0, 0xFF }, Position);
 	IsActive = active;
 
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
@@ -53,7 +53,7 @@ void Button::Draw()
 {
 	if (IsActive)
 	{
-		TextureManager::GetInstance().Draw(texture, Position.x, Position.y, Position.w, Position.h);
+		TextureManager::Draw(texture, { 0, 0, Position.w, Position.h }, { Position.x, Position.y, Position.w, Position.h });
 	}
 }
 

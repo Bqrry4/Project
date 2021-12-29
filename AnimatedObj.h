@@ -32,9 +32,9 @@ public:
 	//	this->frame.AnimSpeed = AnimSpeed;
 	//}
 
-	virtual void Draw(SDL_Point* CameraTranslate = nullptr);
+	virtual void Draw(const SDL_Point* CameraTranslate = nullptr);
 	virtual void Update();
-	virtual bool Parse(XMLElement* root, int iObject = 0);
+	virtual bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 
 	void NextFrame();
 };

@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <map>
+#include <vector>
 
 
 enum Textures {
@@ -13,8 +13,8 @@ enum Textures {
 
 class TextureManager {
 
-	std::map<Uint16, SDL_Texture*> TextureMap;
-	//std::vector<SDL_Texture*> TextureMap;
+	//std::map<Uint16, SDL_Texture*> TextureMap;
+	std::vector<SDL_Texture*> TextureMap;
 	TTF_Font* Font;
 
 	TextureManager(): Font(nullptr)
@@ -25,22 +25,22 @@ class TextureManager {
 	TextureManager& operator=(TextureManager&&) = delete;
 
 public:
-	~TextureManager()
-	{}
+	~TextureManager() { Clean(); }
 
 	inline static TextureManager& GetInstance() { static TextureManager instance; return instance; }
 
 	bool Init();
 
 	inline size_t TextureMapSize() { return TextureMap.size(); }
+
 	bool Load(const char* path, Uint16 type);
+	void Draw(Uint16 type, SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip = SDL_FLIP_NONE, const SDL_Point* CameraTranslate = nullptr);
+
 	SDL_Texture* Load(const char* label, SDL_Color color, SDL_Rect dimension);
-	SDL_Texture* Load(const char* path);
 
-	SDL_Texture* FillTransparent(SDL_Texture* texture, SDL_Color color, SDL_Rect dimension);
-
-	void Draw(Uint16 type, int x, int y, int w, int h, int row = 0, int frame = 0, SDL_RendererFlip flip = SDL_FLIP_NONE, SDL_Point* CameraTranslate = nullptr);
-	void Draw(SDL_Texture* texture, int x, int y, int w, int h, int row = 0, int frame = 0, SDL_RendererFlip flip = SDL_FLIP_NONE, SDL_Point* CameraTranslate = nullptr);
+	static SDL_Texture* Load(const char* path, int* w = nullptr, int* h = nullptr);
+	static SDL_Texture* FillTransparent(SDL_Texture* texture, SDL_Color color, SDL_Rect dimension);
+	static void Draw(SDL_Texture* texture, SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip = SDL_FLIP_NONE, const SDL_Point* CameraTranslate = nullptr);
 	
 	void Clean();
 	

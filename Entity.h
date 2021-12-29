@@ -2,8 +2,8 @@
 #include<SDL.h>
 enum class Looking
 {
-	Left,
-	Right
+	Left = -1,
+	Right = 1
 };
 
 class Entity
@@ -17,6 +17,7 @@ protected:
 
 	bool Respaunable : 1;
 	bool AtackFrameTrigger : 1;
+	int AtackFrame;
 public:
 	Entity() : HP(0), AP(0), direction(Looking::Left), AtRange(0), AtackingMode(false), AtackDT(0), AtackFrameTrigger(false)
 	{}

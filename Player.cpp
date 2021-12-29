@@ -3,14 +3,35 @@
 #include "Input.h"
 
 
-const float Height = 70;
-const float TimetoApex = 0.4;
+const float Height = 70.f;
+const float TimetoApex = 0.4f;
 
 float Player::ySpeed = 2.0f * Height / TimetoApex;
 float Player::Gravity = 2.0f * Height / TimetoApex / TimetoApex;
 
 float Player::xSpeed = 238;
 float Player::a = 0.1; //Coeficientul de alunecare
+
+
+Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f)
+{
+    ObjectClassId = 2;
+
+    collide.Is = true;
+    collide.WithOthers = true;
+
+    this->Key_Up_id = Key_Up_id;
+    this->Key_Down_id = Key_Down_id;
+    this->Key_Left_id = Key_Left_id;
+    this->Key_Right_id = Key_Right_id;
+    this->Key_Atack_id = Key_Atack_id;
+    this->Key_Ability_Save_id = Key_Ability_Save_id;
+    this->Key_Ability_Load_id = Key_Ability_Load_id;
+
+    HP = 100;
+    AP = 50;
+    AtRange = 13;
+}
 
 
 void Player::Movement()
@@ -103,11 +124,10 @@ void Player::Jump()
 
 void Player::Update()
 {
-    if (ObjState != (Uint16)PlayerState::Atack) {
+    if (ObjState != (Uint16)PlayerState::Atack && ObjState != (Uint16)PlayerState::Ability) {
         Jump();
         Movement();
     }
-
     Ability();
     //SDL_Log("%d", HP);
 }
@@ -140,11 +160,43 @@ void Player::Update()
 
 void Player::Ability()
 {
-    if (Input::GetInstance().KeyState(Key_Ability_id))
+    if (ObjState != (Uint16)PlayerState::Ability)
     {
-        ObjState = (Uint16)PlayerState::Ability;
-        std::swap(hitbox.x, hitbox.y);
-        //std::swap(vx, vy);
+        if (Input::GetInstance().KeyState(Key_Ability_Save_id) && collide.Below) //Record Position
+        {
+            ObjState = (Uint16)PlayerState::Ability;
+            AMode = true;
+            frame.aFrame = 0;
+
+            CheckPointPosition.x = hitbox.x;
+            CheckPointPosition.y = hitbox.y;
+            //std::swap(hitbox.x, hitbox.y);
+            //std::swap(vx, vy);
+        }
+        if (AbilityDT < 5000) //  Ability delay 5 sec
+        {
+            AbilityDT += SystemTimer::GetInstance()->GetDt() * 1000;
+        }
+        else {
+            if (Input::GetInstance().KeyState(Key_Ability_Load_id) && collide.Below) //Apply Position
+            {
+                //ObjState = (Uint16)PlayerState::Ability;
+                //AMode = true;
+                //frame.aFrame = 0;
+                AbilityDT = 0;
+
+                hitbox.x = CheckPointPosition.x;
+                hitbox.y = CheckPointPosition.y;
+            }
+        }
+    }
+    else
+    {
+        if (frame.aFrame == frame.States[ObjState] - 1)
+        {
+            AMode = false;
+            ObjState = (Uint16)PlayerState::Repaos;
+        }
     }
 }
 

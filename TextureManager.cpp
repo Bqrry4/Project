@@ -36,12 +36,12 @@ bool TextureManager::Load(const char* path, Uint16 type)
 	}
 	SDL_FreeSurface(loadedSurface);
 
-	TextureMap[type] = newTexture;
+	TextureMap.push_back(newTexture);
 
 	return true;
 }
 
-SDL_Texture* TextureManager::Load(const char* path)
+SDL_Texture* TextureManager::Load(const char* path, int* w, int* h)
 {
 	if (path == nullptr)
 	{
@@ -54,6 +54,14 @@ SDL_Texture* TextureManager::Load(const char* path)
 	{
 		SDL_Log("Failed loading image %s \n", SDL_GetError());
 		return nullptr;
+	}
+	if (w != nullptr)
+	{
+		*w = loadedSurface->w;
+	}
+	if (h != nullptr)
+	{
+		*h = loadedSurface->h;
 	}
 
 	SDL_Texture* newTexture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRender(), loadedSurface);
@@ -136,37 +144,41 @@ SDL_Texture* TextureManager::FillTransparent(SDL_Texture* texture, SDL_Color col
 
 }
 
-void TextureManager::Draw(Uint16 type, int x, int y, int w, int h, int row, int column, SDL_RendererFlip flip, SDL_Point* CameraTranslate) //Pentru imagine statica, valorile {row, column} sunt implicite
+void TextureManager::Draw(Uint16 type, SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip, const SDL_Point* CameraTranslate)
 {
 	if (CameraTranslate != nullptr)
 	{
-		x = x - CameraTranslate->x;
-		y = y - CameraTranslate->y;
+		destRect.x -= CameraTranslate->x;
+		destRect.y -= CameraTranslate->y;
 	}
-	SDL_Rect srcRect = { w* column, h*row, w, h };
-	SDL_Rect destRect = { x , y, w, h };
-	SDL_RenderCopyEx(Game::GetInstance().GetRender(), TextureMap[type], &srcRect, &destRect, 0, nullptr, flip);
 
+	if (destRect.x + destRect.w > 0 && destRect.x < Game::ScreenWidth() && destRect.y + destRect.h > 0 && destRect.y < Game::ScreenHeigth()) //Render only if it is on the screen
+	{
+		SDL_RenderCopyEx(Game::GetInstance().GetRender(), TextureMap[type], &srcRect, &destRect, 0, nullptr, flip);
+	}
 }
 
-void TextureManager::Draw(SDL_Texture* texture, int x, int y, int w, int h, int row, int column, SDL_RendererFlip flip, SDL_Point* CameraTranslate)
+void TextureManager::Draw(SDL_Texture* texture, SDL_Rect srcRect, SDL_Rect destRect, SDL_RendererFlip flip, const SDL_Point* CameraTranslate)
 {
 	if (CameraTranslate != nullptr)
 	{
-		x = x - CameraTranslate->x;
-		y = y - CameraTranslate->y;
+		destRect.x -= CameraTranslate->x;
+		destRect.y -= CameraTranslate->y;
 	}
-	SDL_Rect srcRect = { w * column, h * row, w, h };
-	SDL_Rect destRect = { x , y, w, h };
-	SDL_RenderCopyEx(Game::GetInstance().GetRender(), texture, &srcRect, &destRect, 0, nullptr, flip);
+	if (destRect.x + destRect.w > 0 && destRect.x < Game::ScreenWidth() && destRect.y + destRect.h > 0 && destRect.y < Game::ScreenHeigth()) //Render only if it is on the screen
+	{
+		SDL_RenderCopyEx(Game::GetInstance().GetRender(), texture, &srcRect, &destRect, 0, nullptr, flip);
+	}
 }
 
 void TextureManager::Clean()
 {
-	std::map<Uint16, SDL_Texture*>::iterator i;
-	for (i = TextureMap.begin(); i != TextureMap.end(); ++i)
+	for (SDL_Texture* tex : TextureMap)
 	{
-		SDL_DestroyTexture(i->second);
+		SDL_DestroyTexture(tex);
 	}
 	TextureMap.clear();
+
+	TTF_CloseFont(Font);
+	Font = NULL;
 }

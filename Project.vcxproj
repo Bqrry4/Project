@@ -147,11 +147,15 @@
   <ItemGroup>
     <ClCompile Include="AnimatedObj.cpp" />
     <ClCompile Include="Archer.cpp" />
+    <ClCompile Include="Background.cpp" />
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClInclude Include="Background.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="Game.h" />
+    <ClCompile Include="GlobalFunctions.cpp" />
     <ClCompile Include="GObject.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Level.cpp" />
@@ -173,6 +177,7 @@
     <ClInclude Include="Archer.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="GlobalFunctions.h" />
     <ClInclude Include="GObject.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />

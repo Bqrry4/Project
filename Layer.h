@@ -1,10 +1,20 @@
 #pragma once
+#include "Vendor/tinyxml2.h"
+using namespace tinyxml2;
+#include "TextureManager.h"
+
 
 class Layer {
+protected:
+	SDL_Texture* texture;
 
 public:
-	virtual void Draw(SDL_Point* CameraTranslate) = 0;
-	//virtual void Update() = 0;
-protected:
-	virtual ~Layer() {}
+	Layer() : texture(nullptr)
+	{}
+	virtual void Draw(const SDL_Point* CameraTranslate) = 0;
+	virtual bool Parse(XMLElement* root, int iLayer = 0) = 0;
+	virtual ~Layer()
+	{
+		SDL_DestroyTexture(texture);
+	}
 };

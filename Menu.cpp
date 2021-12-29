@@ -30,7 +30,7 @@ MainMenu::MainMenu() : Menu()
 
 	buttons[8] = new Button(9, { 890, 660, 80, 80 }, "<", false, EventId);
 
-	Background = TextureManager::GetInstance().Load("assets/menu_background.png");	//Check for missing file!!!!
+	Background = TextureManager::Load("assets/menu_background.png");	//Check for missing file!!!!
 
 }
 
@@ -119,7 +119,7 @@ void MainMenu::ActionHandler(SDL_Event* event)
 			buttons[i]->SwitchActiveMode();
 		break;
 	case 7:
-		Level::PlayerClass = 1;
+		Level::PlayerClass = PlayerClasses::Swordswman;
 		for (int i = 6; i < 8; ++i)
 			buttons[i]->SwitchActiveMode();
 		for (int i = 0; i < 3; ++i)
@@ -128,7 +128,7 @@ void MainMenu::ActionHandler(SDL_Event* event)
 		SwitchTrigger();
 		break;
 	case 8:
-		Level::PlayerClass = 2;
+		Level::PlayerClass = PlayerClasses::Archer;
 		for (int i = 6; i < 8; ++i)
 			buttons[i]->SwitchActiveMode();
 		for (int i = 0; i < 3; ++i)
@@ -152,7 +152,7 @@ void MainMenu::Draw()
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRender(), 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(Game::GetInstance().GetRender());
 
-	TextureManager::GetInstance().Draw(Background, 0, 0, 1024, 768);
+	TextureManager::Draw(Background, { 0, 0, 1024, 768 }, { 0, 0, 1024, 768 });
 	for (int i = 0; i < buttonsCount; ++i)
 	{
 		buttons[i]->Draw();
@@ -219,6 +219,7 @@ void PauseMenu::ActionHandler(SDL_Event* event)
 		break;
 	case 2:
 		Game::GetInstance().SwitchToMainLoop();
+		Game::GetInstance().UnloadLevel();
 		SwitchTrigger();
 		break;
 	case 3:

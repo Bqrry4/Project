@@ -9,9 +9,9 @@ class IObject {
 
 public:
 	virtual void Update() = 0;
-	virtual void Draw(SDL_Point* CameraTranslate) = 0;
+	virtual void Draw(const SDL_Point* CameraTranslate) = 0;
 	//virtual void Delete() = 0;
-	virtual bool Parse(XMLElement*, int) = 0;
+	virtual bool Parse(XMLElement*, int, XMLElement*) = 0;
 	//virtual void Colision() = 0;
 
 	virtual ~IObject() = default;
@@ -67,22 +67,24 @@ public:
 	{
 		ObjectClassId = 0;
 
-		collide.Is = false;
-		collide.Above = false;
-		collide.Below = false;
-		collide.Right = false;
-		collide.Left = false;
-		collide.WithOthers = false;
-		collide.RightObj = false;
-		collide.LeftObj = false;
+		collide = { false }; //Setting all flags to false
+
+		//collide.Is = false;
+		//collide.Above = false;
+		//collide.Below = false;
+		//collide.Right = false;
+		//collide.Left = false;
+		//collide.WithOthers = false;
+		//collide.RightObj = false;
+		//collide.LeftObj = false;
 	
 	}
 	//GObject(Uint16 type, Hitbox box);
 
 	virtual void Update();
-	virtual void Draw(SDL_Point* CameraTranslate = nullptr);
+	virtual void Draw(const SDL_Point* CameraTranslate = nullptr);
 	//virtual void Delete();
-	virtual bool Parse(XMLElement* root, int iObject = 0);
+	virtual bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 
 	inline __int8 GetObjectClassId() { return ObjectClassId; }
 
@@ -90,11 +92,13 @@ public:
 	inline bool IsColliding() { return collide.Is; }
 	inline bool IsCollidingWithObj() { return collide.WithOthers; }
 
+	void TranslateTo(SDL_Point);
 
 	void setFlagAbove(bool value) { collide.Above = value; }
 	void setFlagBelow(bool value) { collide.Below = value; }
 	void setFlagRight(bool value) { collide.Right = value; }
 	void setFlagLeft(bool value) { collide.Left = value; }
+	void SetFlipMode(SDL_RendererFlip value) { flip = value; }
 
 	void setFlagRightWithObj(bool value) { collide.RightObj = value; }
 	void setFlagLeftWithObj(bool value) { collide.LeftObj = value; }

@@ -1,14 +1,20 @@
 #include "ProjectileObject.h"
+#include "SystemTimer.h"
 
-bool ProjectileObject::Parse(XMLElement* root, int iObject)
+bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
-    if (root == nullptr) { return false; }
 
-    XMLElement* xmlElem = root->FirstChildElement("Projectile");
-    for (int i = 0; i < iObject; ++i)
+    if (xmlElem == nullptr)
     {
-        xmlElem = xmlElem->NextSiblingElement();
+        xmlElem = root->FirstChildElement("Projectile");
+        for (int i = 0; i < iObject; ++i)
+        {
+            xmlElem = xmlElem->NextSiblingElement();
+        }
     }
+
+    if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
+
     xmlElem->QueryIntAttribute("w", &hitbox.w);
     xmlElem->QueryIntAttribute("h", &hitbox.h);
     xmlElem->QueryFloatAttribute("vx", &vx);
@@ -19,4 +25,15 @@ bool ProjectileObject::Parse(XMLElement* root, int iObject)
     type = xmlElem->UnsignedAttribute("TextureId");
 
     return true;
+}
+
+void ProjectileObject::Movement()
+{
+    float dt = SystemTimer::GetInstance()->GetDt();
+    hitbox.x += (int)direction * vx * dt;
+}
+
+void ProjectileObject::Update()
+{
+    Movement();
 }
