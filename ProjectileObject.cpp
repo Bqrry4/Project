@@ -21,7 +21,7 @@ bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
     TOffsetX = xmlElem->UnsignedAttribute("TextureOffsetX");
     TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
-    Spacing = xmlElem->UnsignedAttribute("Spacing");
+
     type = xmlElem->UnsignedAttribute("TextureId");
 
     return true;
@@ -36,4 +36,9 @@ void ProjectileObject::Movement()
 void ProjectileObject::Update()
 {
     Movement();
+
+    if (direction == Direction::Left && collide.Left || direction == Direction::Right && collide.Right)
+    {
+        Existence = false;
+    }
 }

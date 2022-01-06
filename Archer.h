@@ -10,8 +10,9 @@ enum class ArcherSideState {
 class Archer : public Player
 {
 	ProjectileObject arrow;
+	SDL_Point pos1;
 public:
-	Archer() : Player()
+	Archer() : Player(), pos1({0,0})
 	{}
 	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 	void Atack();

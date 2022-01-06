@@ -25,7 +25,7 @@ bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
 	TOffsetX = xmlElem->UnsignedAttribute("TextureOffsetX");
 	TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
-	Spacing = xmlElem->UnsignedAttribute("Spacing");
+
 	type = xmlElem->UnsignedAttribute("TextureId");
 
 	flip = (SDL_RendererFlip)xmlElem->UnsignedAttribute("rotation");

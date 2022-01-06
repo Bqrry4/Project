@@ -1,14 +1,11 @@
 #include "NPC.h"
 #include "SystemTimer.h"
 
+#define Height 70.f
+#define TimetoApex 0.4f
 
-const float Height = 70;
-const float TimetoApex = 0.4;
-
-float SpeedY = 2.0f * Height / TimetoApex;
-float Gravity = 2.0f * Height / TimetoApex / TimetoApex;
-
-float SpeedX = 50;
+const float SpeedY = 2.0f * Height / TimetoApex;
+const float SpeedX = 50;
 
 void NPC::Movement()
 {
@@ -18,6 +15,10 @@ void NPC::Movement()
 	{
 		vy += Gravity * dt;
 		hitbox.y += vy * dt;
+	}
+	else
+	{
+		vy = 0.f;
 	}
 
 	if (deplDt < 500)
@@ -30,10 +31,11 @@ void NPC::Movement()
 	{
 		vx = (int)direction * SpeedX;
 		ObjState = (Uint16)NPCState::Run;
-		if (abs(LastXPosition - hitbox.x) > deplasament || (collide.Right && direction == Looking::Right) || (collide.Left && direction == Looking::Left))
+		if (abs(LastXPosition - hitbox.x) > deplasament || (collide.Right && direction == Direction::Right) || (collide.Left && direction == Direction::Left))
 		{
 			deplDt = 0;
 			vx *= -1;
+			direction = ~direction;
 			RandDeplasament();
 			LastXPosition = hitbox.x;
 		}
@@ -43,12 +45,12 @@ void NPC::Movement()
 	if (vx > 0.0f)
 	{
 		flip = SDL_FLIP_NONE;
-		direction = Looking::Right;
+		//direction = Direction::Right;
 	}
 	if(vx < 0.0f)
 	{
 		flip = SDL_FLIP_HORIZONTAL;
-		direction = Looking::Left;
+		//direction = Direction::Left;
 	}
 
 	if (collide.Left && collide.Right)
@@ -69,10 +71,10 @@ void NPC::IsDiyng()
 		if (ObjState != (Uint16)NPCState::Dying)
 		{
 			ObjState = (Uint16)NPCState::Dying;
+			Interact = false;
 			collide.WithOthers = false;
 			AMode = true;
 			frame.aFrame = 0;
-			SDL_Log("%d", frame.aFrame);
 		}
 		else
 		{

@@ -2,21 +2,20 @@
 #include "SystemTimer.h"
 #include "Input.h"
 
+#define Height 70.f
+#define TimetoApex 0.4f
 
-const float Height = 70.f;
-const float TimetoApex = 0.4f;
+const float GObject::Gravity = 2.0f * Height / TimetoApex / TimetoApex;
 
-float Player::ySpeed = 2.0f * Height / TimetoApex;
-float Player::Gravity = 2.0f * Height / TimetoApex / TimetoApex;
+const float ySpeed = 2.0f * Height / TimetoApex;
+const float xSpeed = 238;
+//float Player::a = 0.1; //Coeficientul de alunecare
 
-float Player::xSpeed = 238;
-float Player::a = 0.1; //Coeficientul de alunecare
+Direction operator~(Direction d) { return static_cast<Direction>(~(int)d + 1); }
 
-
-Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f)
+Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id, SDL_Scancode Key_Hanging_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f), a(0.1f), HangRange(50)
 {
-    ObjectClassId = 2;
-
+    Interact = true;
     collide.Is = true;
     collide.WithOthers = true;
 
@@ -27,6 +26,7 @@ Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Ke
     this->Key_Atack_id = Key_Atack_id;
     this->Key_Ability_Save_id = Key_Ability_Save_id;
     this->Key_Ability_Load_id = Key_Ability_Load_id;
+    this->Key_Hanging_id = Key_Hanging_id;
 
     HP = 100;
     AP = 50;
@@ -44,12 +44,11 @@ void Player::Movement()
 
     if (movement == 1) //Right
     {
-
         if (ObjState != (Uint16)PlayerState::Jump) {
             ObjState = (Uint16)PlayerState::Run;
         }
         flip = SDL_FLIP_NONE;
-        direction = Looking::Right;
+        direction = Direction::Right;
     }
     if (movement == 0) //Repaos
     {
@@ -63,7 +62,7 @@ void Player::Movement()
             ObjState = (Uint16)PlayerState::Run;
         }
         flip = SDL_FLIP_HORIZONTAL;
-        direction = Looking::Left;
+        direction = Direction::Left;
     }
 
     if (vx > 0)
@@ -160,6 +159,11 @@ void Player::Update()
 
 void Player::Ability()
 {
+    if (Input::GetInstance().KeyState(Key_Hanging_id))
+        HangMode = true;
+    else
+        HangMode = false;
+
     if (ObjState != (Uint16)PlayerState::Ability)
     {
         if (Input::GetInstance().KeyState(Key_Ability_Save_id) && collide.Below) //Record Position

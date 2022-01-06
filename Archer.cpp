@@ -4,7 +4,6 @@
 
 bool Archer::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
-
     if (xmlElem == nullptr)
     {
         xmlElem = root->FirstChildElement("Projectile");
@@ -16,6 +15,8 @@ bool Archer::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
     if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
 
+    xmlElem->QueryIntAttribute("projectilespawnPositionX", &pos1.x);
+    xmlElem->QueryIntAttribute("projectilespawnPositionY", &pos1.y);
 
     if(!arrow.Parse(root, xmlElem->UnsignedAttribute("projectileType"))) { return false; }
 
@@ -62,17 +63,17 @@ void Archer::Atack()
 
 void Archer::AdaptProjectile()
 {
-    if (direction == Looking::Left)
+    if (direction == Direction::Left)
     {
         arrow.SetFlipMode(SDL_FLIP_HORIZONTAL);
-        arrow.TranslateTo({ (int)hitbox.x, (int)hitbox.y });
-        arrow.SetDirection(Looking::Left);
+        arrow.TranslateTo({ (int)hitbox.x + hitbox.w - pos1.x, (int)hitbox.y + pos1.y });
+        arrow.SetDirection(Direction::Left);
     }
-    if (direction == Looking::Right)
+    if (direction == Direction::Right)
     {
         arrow.SetFlipMode(SDL_FLIP_NONE);
-        arrow.TranslateTo({ (int)hitbox.x, (int)hitbox.y });
-        arrow.SetDirection(Looking::Right);
+        arrow.TranslateTo({ (int)hitbox.x + pos1.x, (int)hitbox.y + pos1.y });
+        arrow.SetDirection(Direction::Right);
     }
 }
 

@@ -22,10 +22,9 @@ protected:
 	bool AtackIntention : 1;
 
 public:
-	NPC() : AnimatedObj(), vx(0), vy(0), LastXPosition(0), deplasament(0), deplDt(0), AtackIntention(false)
+	NPC() : AnimatedObj(), vx(0.f), vy(0.f), LastXPosition(0), deplasament(0), deplDt(0), AtackIntention(false)
 	{
-		ObjectClassId = 3;
-
+		Interact = true;
 		collide.Is = true;
 		collide.WithOthers = true;
 		HP = rand() % 20 + 100;

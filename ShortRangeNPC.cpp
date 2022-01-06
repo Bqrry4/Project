@@ -35,7 +35,7 @@ void ShortRangeNPC::Atack()
 			}
 			else
 			{
-				AtackFrameTrigger = false;
+				AtackingMode = false;
 			}
 		}
 	}

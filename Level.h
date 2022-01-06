@@ -48,10 +48,17 @@ public:
 	void Update();
 
 	void Collision();
+	//void CheckColision(GObject*, GObject*);
 	
 	//void DownCasting(GObject*);
 	void InteractionBetween(GObject*, GObject*);
-	void InteractionBetween(Player*, NPC*);
+	void InteractionBetween(Player*, GObject*);
 	void InteractionBetween(NPC*, Player*);
+
+	void InteractionBetween(ProjectileObject*, GObject*);
+	//void InteractionBetween(ProjectileObject*, NPC*);
+
+	void PathFinding(SDL_Point start, SDL_Point end) //Using A* - algorythm
+	{}
 };
 

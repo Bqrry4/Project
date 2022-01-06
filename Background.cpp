@@ -19,10 +19,12 @@ bool Background::Parse(XMLElement* root, int iLayer)
 
 void Background::Draw(const SDL_Point* CameraTranslate)
 {
-	int x = (int)(CameraTranslate->x * Scrollratio) % Width;
+	int ScaledWidth = (int)(Width * Game::ScreenHeigth() / Height) ;
+	int ScaledHeight = Game::ScreenHeigth();
+
+	int x = (int)(CameraTranslate->x * Scrollratio) % ScaledWidth;
 	int y = 0; //red
 
-	TextureManager::Draw(texture, { 0, 0, Width, Height }, { -x, y, Width, Height }, SDL_FLIP_NONE);
-	TextureManager::Draw(texture, { 0, 0, Width, Height }, { -x + Width, y, Width, Height }, SDL_FLIP_NONE);
-	//TextureManager::GetInstance().Draw(texture, 0, 0, 3000, 1500, 0, 0, SDL_FLIP_NONE, CameraTranslate);
+	TextureManager::Draw(texture, { 0, 0, Width, Height }, { -x, y, ScaledWidth, ScaledHeight });
+	TextureManager::Draw(texture, { 0, 0, Width, Height }, { -x + ScaledWidth, y, ScaledWidth, ScaledHeight });
 }

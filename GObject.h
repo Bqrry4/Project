@@ -4,30 +4,11 @@
 
 using namespace tinyxml2;
 
-//Interface of Object
-class IObject {
-
-public:
-	virtual void Update() = 0;
-	virtual void Draw(const SDL_Point* CameraTranslate) = 0;
-	//virtual void Delete() = 0;
-	virtual bool Parse(XMLElement*, int, XMLElement*) = 0;
-	//virtual void Colision() = 0;
-
-	virtual ~IObject() = default;
-
-};
-
-
-
-//GameObject 
 
 struct Hitbox	//{x,y,w,h} coords
 {
-	float x;
-	float y;
-	int w;
-	int h;
+	float x, y;
+	int w, h;
 };
 
 struct CollideFlags //Colliding flags
@@ -40,57 +21,38 @@ struct CollideFlags //Colliding flags
 	bool Left : 1;
 
 	bool WithOthers : 1;
-
-	bool LeftObj : 1;
-	bool RightObj : 1;
 };
 
-class GObject : public IObject
+class GObject
 {
 protected:
-	__int8 ObjectClassId;
+	Hitbox hitbox;
+	Uint16 type; //Texture id
+	SDL_RendererFlip flip;
+	
+	Uint16 TOffsetX;
+	Uint16 TOffsetY;
 
-		//Properties of an Static Object
-		Hitbox hitbox;
-		Uint16 type; //Texture id
-		SDL_RendererFlip flip; //Flipping texture
-		
-		Uint16 TOffsetX;
-		Uint16 TOffsetY;
-		Uint16 Spacing;
+	
+	CollideFlags collide;
+	bool Interact;
+	bool Existence;
 
-		CollideFlags collide;
-
+	const static float Gravity;
 
 public:
-	GObject() : hitbox({ 0,0,0,0 }), type(0), flip(SDL_FLIP_NONE), TOffsetX(0), TOffsetY(0), Spacing(0)
-	{
-		ObjectClassId = 0;
+	GObject() : hitbox({ 0,0,0,0 }), type(0), flip(SDL_FLIP_NONE), TOffsetX(0), TOffsetY(0), Existence(true), collide({ false }), Interact(false)
+	{}
+	virtual ~GObject() = default;
 
-		collide = { false }; //Setting all flags to false
-
-		//collide.Is = false;
-		//collide.Above = false;
-		//collide.Below = false;
-		//collide.Right = false;
-		//collide.Left = false;
-		//collide.WithOthers = false;
-		//collide.RightObj = false;
-		//collide.LeftObj = false;
-	
-	}
-	//GObject(Uint16 type, Hitbox box);
-
-	virtual void Update();
+	virtual void Update() = 0;
 	virtual void Draw(const SDL_Point* CameraTranslate = nullptr);
-	//virtual void Delete();
 	virtual bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
-
-	inline __int8 GetObjectClassId() { return ObjectClassId; }
 
 	inline Hitbox* GetHitbox() { return & hitbox; }
 	inline bool IsColliding() { return collide.Is; }
 	inline bool IsCollidingWithObj() { return collide.WithOthers; }
+	inline bool IsInteracting() { return Interact; }
 
 	void TranslateTo(SDL_Point);
 
@@ -100,6 +62,6 @@ public:
 	void setFlagLeft(bool value) { collide.Left = value; }
 	void SetFlipMode(SDL_RendererFlip value) { flip = value; }
 
-	void setFlagRightWithObj(bool value) { collide.RightObj = value; }
-	void setFlagLeftWithObj(bool value) { collide.LeftObj = value; }
+	bool shouldExist() { return Existence; }
+	void SetExistenceMode(bool value) { Existence = value; }
 };

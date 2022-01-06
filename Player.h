@@ -10,18 +10,19 @@ enum class PlayerState {
 	Ability
 };
 
+
 class Player : public AnimatedObj , public Entity
 {
 	float vx;
 	float vy;
 
-	static float a;
-	static float xSpeed;
-	static float ySpeed;
-	static float Gravity;
+	float a; //Coeficientul de alunecare
 
 	SDL_Point CheckPointPosition;
 	float AbilityDT;
+
+	int HangRange;
+	bool HangMode;
 
 protected:
 	SDL_Scancode Key_Up_id;
@@ -31,18 +32,20 @@ protected:
 	SDL_Scancode Key_Atack_id;
 	SDL_Scancode Key_Ability_Save_id;
 	SDL_Scancode Key_Ability_Load_id;
+	SDL_Scancode Key_Hanging_id;
 
-public: 
-	Player(SDL_Scancode Key_Up_id = SDL_SCANCODE_UP, SDL_Scancode Key_Down_id = SDL_SCANCODE_DOWN, SDL_Scancode Key_Left_id = SDL_SCANCODE_LEFT, SDL_Scancode Key_Right_id = SDL_SCANCODE_RIGHT, SDL_Scancode Key_Atack_id = SDL_SCANCODE_SPACE, SDL_Scancode Key_Ability_Save_id = SDL_SCANCODE_Z, SDL_Scancode Key_Ability_Load_id = SDL_SCANCODE_X);
-	~Player() = default;
-	
-
-	virtual void Update();
 	virtual void Movement();
 	virtual void Jump();
 	//virtual void Atack();
 	virtual void Ability();
+public: 
+	Player(SDL_Scancode Key_Up_id = SDL_SCANCODE_UP, SDL_Scancode Key_Down_id = SDL_SCANCODE_DOWN, SDL_Scancode Key_Left_id = SDL_SCANCODE_LEFT, SDL_Scancode Key_Right_id = SDL_SCANCODE_RIGHT, SDL_Scancode Key_Atack_id = SDL_SCANCODE_SPACE, SDL_Scancode Key_Ability_Save_id = SDL_SCANCODE_Z, SDL_Scancode Key_Ability_Load_id = SDL_SCANCODE_X, SDL_Scancode Key_Hanging_id = SDL_SCANCODE_C);
+	~Player() = default;
+	
+	virtual void Update();
 	virtual void IsDiyng();
-	void Delete()
-	{}
+
+
+	inline int getHangRange() { return HangRange; }
+	inline bool IsHanging() { return HangMode; }
 };
