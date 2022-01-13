@@ -7,6 +7,30 @@
 const float SpeedY = 2.0f * Height / TimetoApex;
 const float SpeedX = 50;
 
+
+bool NPC::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
+{
+	if (xmlElem == nullptr)
+	{
+		xmlElem = root->FirstChildElement("object");
+		for (int i = 0; i < iObject; ++i)
+		{
+			xmlElem = xmlElem->NextSiblingElement();
+		}
+	}
+
+	if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
+
+	const char* type = xmlElem->Attribute("drop");
+	if (type != nullptr && !strcmp(type, "Yes"))
+	{
+		drop = new ElderScroll;
+		if (!drop->Parse(root, 0)) { return false; }
+	}
+
+	return true;
+}
+
 void NPC::Movement()
 {
 	float dt = SystemTimer::GetInstance()->GetDt();
@@ -62,8 +86,6 @@ void NPC::Movement()
 	hitbox.x += vx * dt;
 }
 
-
-
 void NPC::IsDiyng()
 {
 	if (HP <= 0)
@@ -71,7 +93,6 @@ void NPC::IsDiyng()
 		if (ObjState != (Uint16)NPCState::Dying)
 		{
 			ObjState = (Uint16)NPCState::Dying;
-			Interact = false;
 			collide.WithOthers = false;
 			AMode = true;
 			frame.aFrame = 0;
@@ -83,6 +104,15 @@ void NPC::IsDiyng()
 	}
 
 }
+
+ElderScroll* NPC::GetDrop()
+{
+	if (drop) 
+		drop->TranslateTo({ (int)hitbox.x , (int)hitbox.y });
+
+	return drop;
+}
+
 
 void NPC::Update()
 {

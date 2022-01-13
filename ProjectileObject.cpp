@@ -27,6 +27,14 @@ bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
     return true;
 }
 
+void ProjectileObject::AdaptPosition(SDL_Point pos, Direction direction)
+{
+    TranslateTo(pos);
+    this->direction = direction;
+    flip = (direction == Direction::Left) ? (SDL_FLIP_HORIZONTAL) : (SDL_FLIP_NONE);
+}
+
+
 void ProjectileObject::Movement()
 {
     float dt = SystemTimer::GetInstance()->GetDt();

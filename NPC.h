@@ -1,6 +1,7 @@
 #pragma once
 #include "AnimatedObj.h"
 #include "Entity.h"
+#include "ElderScroll.h"
 
 
 enum class NPCState {
@@ -18,11 +19,17 @@ class NPC : public AnimatedObj, public Entity
 	float LastXPosition;
 	int deplasament, deplDt;
 
+	ElderScroll* drop;
+
 protected:
 	bool AtackIntention : 1;
 
+	void RandDeplasament() { deplasament = abs((rand() % 5) * (int)hitbox.x /* + (int)hitbox.x*/); }
+	virtual void Movement();
+	virtual void IsDiyng();
+
 public:
-	NPC() : AnimatedObj(), vx(0.f), vy(0.f), LastXPosition(0), deplasament(0), deplDt(0), AtackIntention(false)
+	NPC() : AnimatedObj(), vx(0.f), vy(0.f), LastXPosition(0), deplasament(0), deplDt(0), AtackIntention(false), drop(nullptr)
 	{
 		Interact = true;
 		collide.Is = true;
@@ -32,14 +39,17 @@ public:
 		AP = 50;
 		AtRange = 12;
 	}
+	virtual ~NPC()
+	{
+		delete drop;
+	}
 
-	void RandDeplasament() { deplasament = abs((rand() % 5) * (int)hitbox.x /* + (int)hitbox.x*/); }
 	void WantToAtack(bool value) { AtackIntention = value;}
-
-	virtual void Movement();
-	virtual void IsDiyng();
+	virtual bool IsDead() { return ObjState == (Uint16)NPCState::Dying; }
+	ElderScroll* GetDrop();
 
 	void Update();
+	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 
 };
 

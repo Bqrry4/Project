@@ -4,12 +4,12 @@
 
 class MovableObject : public GObject
 {
-	float vx, vy;
+	float vx, vy, MovableSpeed;
 	Direction direction;
 
 	void Movement();
 public:
-	MovableObject() : vy(0.f), vx(0.f), direction(Direction::Left)
+	MovableObject() : vy(0.f), vx(0.f), MovableSpeed(0.f), direction(Direction::Left)
 	{
 		Interact = true;
 		collide.Is = true;

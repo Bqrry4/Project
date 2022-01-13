@@ -14,6 +14,8 @@ int main(int argc, char* argv[])
 	{
 		Game::GetInstance().MainMenuLoop();
 		Game::GetInstance().PuaseMenuLoop();
+		Game::GetInstance().GameOverMenuLoop();
+		Game::GetInstance().LevelClearMenuLoop();
 		Game::GetInstance().Events();
 		Game::GetInstance().Update();
 		Game::GetInstance().Render();

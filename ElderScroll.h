@@ -5,11 +5,18 @@ class ElderScroll : public GObject
 {
 	float vy;
 	float middlePosition;
+
+	int PickDt;
 public:
-	ElderScroll() : vy(10.0f), middlePosition(0.0f)
-	{
-		Interact = true;
-	}
+	static int InstanceCount;
+
+	ElderScroll();
+	~ElderScroll();
+
+	ElderScroll(const ElderScroll&) = default;
+	bool CanBePicked();
+
+	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 	void Update();
 };
 

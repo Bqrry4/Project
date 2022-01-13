@@ -26,6 +26,7 @@ public:
 	void Movement();
 	void Update();
 
+	void AdaptPosition(SDL_Point, Direction);
 	int DoDamage() { return Damage; }
 	Direction FlyDirection() { return direction; }
 	void SetDirection(Direction direction) { this->direction = direction; }

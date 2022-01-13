@@ -5,15 +5,17 @@
 #define Height 70.f
 #define TimetoApex 0.4f
 
+Direction operator~(Direction d) { return static_cast<Direction>(~(int)d + 1); }
+
 const float GObject::Gravity = 2.0f * Height / TimetoApex / TimetoApex;
 
 const float ySpeed = 2.0f * Height / TimetoApex;
 const float xSpeed = 238;
 //float Player::a = 0.1; //Coeficientul de alunecare
 
-Direction operator~(Direction d) { return static_cast<Direction>(~(int)d + 1); }
+bool Player::PlayerDead = false;
 
-Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id, SDL_Scancode Key_Hanging_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f), a(0.1f), HangRange(50)
+Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id, SDL_Scancode Key_Hanging_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f), a(0.1f),HangMode(false), HangRange(50)
 {
     Interact = true;
     collide.Is = true;
@@ -28,7 +30,7 @@ Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Ke
     this->Key_Ability_Load_id = Key_Ability_Load_id;
     this->Key_Hanging_id = Key_Hanging_id;
 
-    HP = 100;
+    HP = 10000;
     AP = 50;
     AtRange = 13;
 }
@@ -123,12 +125,13 @@ void Player::Jump()
 
 void Player::Update()
 {
-    if (ObjState != (Uint16)PlayerState::Atack && ObjState != (Uint16)PlayerState::Ability) {
+    IsDiyng();
+    if (ObjState != (Uint16)PlayerState::Atack && ObjState != (Uint16)PlayerState::Ability && ObjState != (Uint16)PlayerState::Dying) {
         Jump();
         Movement();
     }
-    Ability();
-    //SDL_Log("%d", HP);
+    if(!IsDead())
+        Ability();
 }
 
 //void Player::Atack()
@@ -159,7 +162,7 @@ void Player::Update()
 
 void Player::Ability()
 {
-    if (Input::GetInstance().KeyState(Key_Hanging_id))
+    if (Input::GetInstance().KeyState(Key_Hanging_id) && ObjState != (Uint16)PlayerState::Run)
         HangMode = true;
     else
         HangMode = false;
@@ -206,5 +209,21 @@ void Player::Ability()
 
 void Player::IsDiyng()
 {
-
+    if (HP <= 0)
+    {
+        if (ObjState != (Uint16)PlayerState::Dying)
+        {
+            ObjState = (Uint16)PlayerState::Dying;
+            collide.WithOthers = false;
+            AMode = true;
+            frame.aFrame = 0;
+        }
+        else
+        {
+            if (frame.aFrame == frame.States[ObjState] - 1)
+            {
+                PlayerDead = true;
+            }
+        }
+    }
 }

@@ -21,6 +21,8 @@ struct CollideFlags //Colliding flags
 	bool Left : 1;
 
 	bool WithOthers : 1;
+
+	void operator~(); //Set flags to false
 };
 
 class GObject
@@ -44,7 +46,8 @@ public:
 	GObject() : hitbox({ 0,0,0,0 }), type(0), flip(SDL_FLIP_NONE), TOffsetX(0), TOffsetY(0), Existence(true), collide({ false }), Interact(false)
 	{}
 	virtual ~GObject() = default;
-
+	GObject(const GObject&) = default;
+	
 	virtual void Update() = 0;
 	virtual void Draw(const SDL_Point* CameraTranslate = nullptr);
 	virtual bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
@@ -52,7 +55,9 @@ public:
 	inline Hitbox* GetHitbox() { return & hitbox; }
 	inline bool IsColliding() { return collide.Is; }
 	inline bool IsCollidingWithObj() { return collide.WithOthers; }
+
 	inline bool IsInteracting() { return Interact; }
+	inline void IsInteracting(bool value) { Interact = value; }
 
 	void TranslateTo(SDL_Point);
 

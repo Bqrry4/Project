@@ -4,6 +4,7 @@
 #include "Menu.h"
 
 class Game {
+
 	static int screenWidth;
 	static int screenHeigth;
 
@@ -12,6 +13,13 @@ class Game {
 	SDL_Renderer* render;
 
 	Menu** menu;
+	enum {
+		Main,
+		Pause,
+		GameOver,
+		LevelClear,
+		MenuesCount
+	};
 	Level* level;
 
 	Game() : IsRunning(false), window(nullptr), render(nullptr), level(nullptr), menu(nullptr)
@@ -23,10 +31,11 @@ class Game {
 public:
 	~Game()
 	{
-		SDL_Log("%p Destructor", level);
 		delete level;
-		delete menu[0];
-		delete menu[1];
+		for (int i = 0; i < MenuesCount; ++i)
+		{
+			delete menu[i];
+		}
 		delete menu;
 	}
 
@@ -47,7 +56,10 @@ public:
 	//Menues functions;
 	void MainMenuLoop();
 	void PuaseMenuLoop();
+	void GameOverMenuLoop();
+	void LevelClearMenuLoop();
 	void SwitchToMainLoop();
+
 
 	//Level functions;
 	void LoadLevel();

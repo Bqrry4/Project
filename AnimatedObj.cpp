@@ -4,6 +4,27 @@
 #include "AnimatedObj.h"
 #include "SystemTimer.h"
 
+
+
+AnimatedObj::~AnimatedObj()
+{
+	delete frame.States;
+}
+
+AnimatedObj::AnimatedObj(const AnimatedObj& obj) : GObject(obj)
+{
+	timeElapsed = 0;
+	frame = obj.frame;
+	if (frame.aStates)
+	{
+		frame.States = new Uint8[frame.aStates];
+		memcpy_s(frame.States, frame.aStates, obj.frame.States, frame.aStates);
+	}
+
+	this->ObjState = obj.ObjState;
+	AMode = false;
+}
+
 bool AnimatedObj::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
 
@@ -14,7 +35,14 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 		{
 			xmlElem = xmlElem->NextSiblingElement();
 		}
+
+		if (xmlElem == nullptr)
+		{
+			SDL_Log("Invalid Parameters for parsing that object");
+			return false;
+		}
 	}
+
 
 	if (!GObject::Parse(root, iObject, xmlElem)) { return false; }
 

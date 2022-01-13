@@ -11,6 +11,8 @@ class Archer : public Player
 {
 	ProjectileObject arrow;
 	SDL_Point pos1;
+
+	//void AdaptProjectile(); //Adapt projectile position to Archer's
 public:
 	Archer() : Player(), pos1({0,0})
 	{}
@@ -18,7 +20,6 @@ public:
 	void Atack();
 	void Update();
 
-	void AdaptProjectile(); //Adapt projectile position to Archer's
-	inline ProjectileObject getProjectile() { return arrow; }
+	inline ProjectileObject getProjectile() {  return arrow; }
 };
 

@@ -15,12 +15,13 @@ void MovableObject::Movement()
 		vy = 0.f;
 	}
 
-	if (vx > 0 && !collide.Left && !collide.Right)
+	if (vx > 0 && !(direction == Direction::Left && collide.Left) && !(direction == Direction::Right && collide.Right))
 	{
-		vx = 0.95 * vx - 0.05 * vx;
+		vx *= 0.9;
 		hitbox.x += (int)direction * vx * dt;
 	}
-	else {
+	else
+	{
 		vx = 0.f;
 	}
 }

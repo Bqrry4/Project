@@ -6,11 +6,8 @@ bool Archer::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
     if (xmlElem == nullptr)
     {
-        xmlElem = root->FirstChildElement("Projectile");
-        for (int i = 0; i < iObject; ++i)
-        {
-            xmlElem = xmlElem->NextSiblingElement();
-        }
+        SDL_Log("Invalid Parameters for parsing that object");
+        return false;
     }
 
     if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
@@ -61,21 +58,21 @@ void Archer::Atack()
     }
 }
 
-void Archer::AdaptProjectile()
-{
-    if (direction == Direction::Left)
-    {
-        arrow.SetFlipMode(SDL_FLIP_HORIZONTAL);
-        arrow.TranslateTo({ (int)hitbox.x + hitbox.w - pos1.x, (int)hitbox.y + pos1.y });
-        arrow.SetDirection(Direction::Left);
-    }
-    if (direction == Direction::Right)
-    {
-        arrow.SetFlipMode(SDL_FLIP_NONE);
-        arrow.TranslateTo({ (int)hitbox.x + pos1.x, (int)hitbox.y + pos1.y });
-        arrow.SetDirection(Direction::Right);
-    }
-}
+//void Archer::AdaptProjectile()
+//{
+//    if (direction == Direction::Left)
+//    {
+//        arrow.SetFlipMode(SDL_FLIP_HORIZONTAL);
+//        arrow.TranslateTo({ (int)hitbox.x + hitbox.w - pos1.x, (int)hitbox.y + pos1.y });
+//        arrow.SetDirection(Direction::Left);
+//    }
+//    if (direction == Direction::Right)
+//    {
+//        arrow.SetFlipMode(SDL_FLIP_NONE);
+//        arrow.TranslateTo({ (int)hitbox.x + pos1.x, (int)hitbox.y + pos1.y });
+//        arrow.SetDirection(Direction::Right);
+//    }
+//}
 
 void Archer::Update()
 {
@@ -83,6 +80,11 @@ void Archer::Update()
     Atack();
     if (AtackingMode)
     {
-        AdaptProjectile();
+        //Adapt arrow to archer's position
+        SDL_Point point;
+        (direction == Direction::Left) ? 
+            (point = { (int)hitbox.x + hitbox.w - pos1.x, (int)hitbox.y + pos1.y })
+            : (point = { (int)hitbox.x + pos1.x, (int)hitbox.y + pos1.y });
+        arrow.AdaptPosition(point, direction);
     }
 }

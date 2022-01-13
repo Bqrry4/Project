@@ -11,10 +11,12 @@ protected:
 public:
 	Layer() : texture(nullptr)
 	{}
-	virtual void Draw(const SDL_Point* CameraTranslate) = 0;
-	virtual bool Parse(XMLElement* root, int iLayer = 0) = 0;
 	virtual ~Layer()
 	{
 		SDL_DestroyTexture(texture);
 	}
+
+	virtual void Draw(const SDL_Point* CameraTranslate) = 0;
+	virtual bool Parse(XMLElement* root, int iLayer = 0) = 0;
+
 };

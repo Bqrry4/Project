@@ -13,9 +13,10 @@ public:
 	{}
 	Camera(int borderW, int borderH) : Position({ 0,0 }), borderW(borderW), borderH(borderH)
 	{}
-	inline SDL_Point* GetCameraPos() { return &Position; }
-
+	~Camera() = default;
 
 	void Update(Hitbox* target);
+
+	inline SDL_Point* GetCameraPos() { return &Position; }
 };
 

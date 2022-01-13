@@ -5,6 +5,7 @@
 #include "Archer.h"
 #include "ShortRangeNPC.h"
 #include "LongRangeNPC.h"
+#include "Boss.h"
 #include <list>
 
 enum class PlayerClasses {
@@ -31,9 +32,24 @@ class Level
 
 	std::list<GObject*> Objlist; //List of level's objects
 
+
+	void Collision();
+	//void CheckColision(GObject*, GObject*);
+
+	//void DownCasting(GObject*);
+	void InteractionBetween(GObject*, GObject*);
+	void InteractionBetween(Player*, GObject*);
+	void InteractionBetween(NPC*, Player*);
+	//void InteractionBetween(Boss*, Player*);
+	void InteractionBetween(ProjectileObject*, GObject*);
+	//void InteractionBetween(ProjectileObject*, NPC*);
+
+	void PathFinding(SDL_Point start, SDL_Point end) //Using A* - algorythm
+	{}
 public:
 	static Uint16 Levelid;
-	static bool GameMode; // 0 = Single mode, 1 = Duo mode
+	//static bool GameMode; // 0 = Single mode, 1 = Duo mode
+	static float DifficultyAmpl;
 	static PlayerClasses PlayerClass;
 	static bool IsLoaded;
 
@@ -46,19 +62,4 @@ public:
 
 	void Draw();
 	void Update();
-
-	void Collision();
-	//void CheckColision(GObject*, GObject*);
-	
-	//void DownCasting(GObject*);
-	void InteractionBetween(GObject*, GObject*);
-	void InteractionBetween(Player*, GObject*);
-	void InteractionBetween(NPC*, Player*);
-
-	void InteractionBetween(ProjectileObject*, GObject*);
-	//void InteractionBetween(ProjectileObject*, NPC*);
-
-	void PathFinding(SDL_Point start, SDL_Point end) //Using A* - algorythm
-	{}
 };
-

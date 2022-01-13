@@ -132,15 +132,15 @@ SDL_Texture* TextureManager::FillTransparent(SDL_Texture* texture, SDL_Color col
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRender(), color.r, color.g, color.b, color.a);
 	SDL_RenderClear(Game::GetInstance().GetRender());
 
-	SDL_RenderCopy(Game::GetInstance().GetRender(), texture, NULL, NULL);
+	if (texture)
+	{
+		SDL_RenderCopy(Game::GetInstance().GetRender(), texture, NULL, NULL);
+		SDL_DestroyTexture(texture);
+	}
 
 	SDL_SetRenderTarget(Game::GetInstance().GetRender(), NULL);
 
-	SDL_DestroyTexture(texture);
-	texture = 0;
 	return newtexture;
-
-
 
 }
 

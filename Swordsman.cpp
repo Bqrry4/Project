@@ -42,5 +42,6 @@ void Swordsman::Atack()
 void Swordsman::Update()
 {
     Player::Update();
-    Atack();
+    if(!IsDead())
+        Atack();
 }

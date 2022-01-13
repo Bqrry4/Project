@@ -8,21 +8,23 @@ protected:
 
 	Button** buttons;
 	__int8 buttonsCount;
+	void DrawButtons();
 
 	bool MenuTrigger;
 
 	SDL_Point mouse;
 	bool MouseClick;
 
+	virtual void Events();
+	virtual void ActionHandler(SDL_Event*) = 0;
+
 public:
 	Menu();
-	virtual ~Menu() = default;
+	virtual ~Menu();
 
 	inline bool IsTriggered() { return MenuTrigger; }
 	inline void SwitchTrigger() { MenuTrigger = !MenuTrigger; }
 
-	virtual void Events();
-	virtual void ActionHandler(SDL_Event*) = 0;
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 };
@@ -32,13 +34,28 @@ public:
 
 class MainMenu : public Menu
 {
+	enum {
+		Play,
+		Exit,
+		Level1,
+		Level2,
+		Level3,
+		Easy,
+		Normal,
+		Hard,
+		Swordsman,
+		Archer,
+		Return
+	};
 	SDL_Texture* Background;
 
+	bool WasClosed;
+
+	void ActionHandler(SDL_Event* event);
 public:
 	MainMenu();
 	~MainMenu();
 
-	void ActionHandler(SDL_Event* event);
 	void Update();
 	void Draw();
 };
@@ -46,13 +63,60 @@ public:
 
 class PauseMenu : public Menu
 {
+	enum {
+		Resume,
+		MainMenu,
+		Exit
+	};
 	int timeElapsed;
+
+	void ActionHandler(SDL_Event* event);
 
 public:
 	PauseMenu();
-	~PauseMenu();
+	~PauseMenu() = default;
 
-	void ActionHandler(SDL_Event* event);
+	void Update();
+	void Draw();
+
+};
+
+class GameOverMenu : public Menu
+{
+	enum {
+		Replay,
+		MainMenu
+	};
+
+	SDL_Texture* Label;
+
+	void ActionHandler(SDL_Event*);
+
+public:
+	GameOverMenu();
+	~GameOverMenu() = default;
+
+	void Update();
+	void Draw();
+
+};
+
+class LevelClearMenu : public Menu
+{
+	enum {
+		NextLevel,
+		Replay,
+		MainMenu
+	};
+
+	SDL_Texture* Label;
+
+	void ActionHandler(SDL_Event*);
+
+public:
+	LevelClearMenu();
+	~LevelClearMenu() = default;
+
 	void Update();
 	void Draw();
 

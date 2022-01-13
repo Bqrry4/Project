@@ -7,7 +7,6 @@ enum class Direction : int
 	Right = 1,
 };
 Direction operator~(Direction d); //Switch direction operator
-//return (d == Direction::Left) ? (Direction::Right) : (Direction::Left);
 
 
 class Entity
@@ -22,9 +21,14 @@ protected:
 	bool Respaunable : 1;
 	bool AtackFrameTrigger : 1;
 	int AtackFrame;
+
+	virtual void Movement() = 0;
+	virtual void Atack() = 0;
+	virtual void IsDiyng() = 0;
 public:
 	Entity() : HP(0), AP(0), direction(Direction::Left), AtRange(0), AtackingMode(false), AtackDT(0), AtackFrameTrigger(false)
 	{}
+	virtual ~Entity() = default;
 
 	inline Direction ViewDirection() { return direction; }
 	inline int DoDamage() { return AP; }
@@ -34,8 +38,5 @@ public:
 	inline bool IsAtacking() { return AtackingMode; }
 	inline void IsAtacking(bool value) {AtackingMode = value; }
 
-	virtual void Movement() = 0;
-	virtual void Atack() = 0;
-	virtual void IsDiyng() = 0;
-
+	virtual bool IsDead() = 0;
 };

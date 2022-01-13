@@ -8,9 +8,11 @@ using namespace tinyxml2;
 #include "ElderScroll.h"
 #include "MovableObject.h"
 #include "FixObject.h"
+#include "Boss.h"
 
 Uint16 Level::Levelid = 0;
-bool Level::GameMode = false;
+//bool Level::GameMode = false;
+float Level::DifficultyAmpl = 1.f;
 PlayerClasses Level::PlayerClass = PlayerClasses::Swordswman;
 bool Level::IsLoaded = false;
 
@@ -45,6 +47,7 @@ bool Level::Load()
 		break;
 	}
 
+	ElderScroll::InstanceCount = 0;
 
 	XMLDocument lvlDocument;
 
@@ -128,6 +131,7 @@ bool Level::Load()
 				{
 					Objlist.push_front(new Swordsman);
 					if (!Objlist.front()->Parse(ObjRoot, 0, subElem)) { return false; }
+					Player::PlayerDead = false;
 					break;
 				}
 
@@ -135,6 +139,7 @@ bool Level::Load()
 				{
 					Objlist.push_front(new Archer);
 					if (!Objlist.front()->Parse(ObjRoot, 0, subElem)) { return false; }
+					Player::PlayerDead = false;
 					break;
 				}
 				subElem = subElem->NextSiblingElement("playerClass");
@@ -160,6 +165,22 @@ bool Level::Load()
 		{
 			Objlist.push_back(new LongRangeNPC);
 		}
+		if (!strcmp(type, "DeathBringer"))
+		{
+			Objlist.push_back(new DeathBringer);
+			Boss::IsDefeated = false;
+		}
+		if (!strcmp(type, "SlimeBoss"))
+		{
+			Objlist.push_back(new SlimeBoss);
+			Boss::IsDefeated = false;
+		}
+		if (!strcmp(type, "FireDemon"))
+		{
+			Objlist.push_back(new FireDemon);
+			Boss::IsDefeated = false;
+		}
+
 		if (!strcmp(type, "ElderScroll"))
 		{
 			Objlist.push_back(new ElderScroll);
@@ -203,7 +224,6 @@ void Level::Draw()
 	{
 		obj->Draw(camera->GetCameraPos());
 	}
-
 }
 
 void Level::Update()
@@ -215,10 +235,10 @@ void Level::Update()
 		(*obj)->Update();
 		if (!(*obj)->shouldExist())
 		{
+			delete (*obj);
 			obj = --Objlist.erase(obj);
 		}
 	}
-
 
 	camera->Update(Objlist.front()->GetHitbox());
 }
@@ -304,10 +324,7 @@ void Level::Collision()
 
 }
 
-//void Level::CheckColision(GObject*, GObject*)
-//{
-//
-//}
+
 
 void Level::InteractionBetween(GObject* first, GObject* second)
 {
@@ -355,6 +372,12 @@ void Level::InteractionBetween(GObject* first, GObject* second)
 		return;
 	}
 
+	//if (dynamic_cast <Boss*>(first) && dynamic_cast <Player*>(second))
+	//{
+	//	InteractionBetween(dynamic_cast <Boss*>(first), dynamic_cast <Player*>(second));
+	//	return;
+	//}
+
 	if (dynamic_cast <NPC*>(first) && dynamic_cast <Player*>(second))
 	{
 		InteractionBetween(dynamic_cast <NPC*>(first), dynamic_cast <Player*>(second));
@@ -372,8 +395,7 @@ void Level::InteractionBetween(Player* player, GObject* object)
 	{
 			player->IsAtacking(false);
 			Archer* archer = dynamic_cast <Archer*>(player);
-			GObject* newObj = new ProjectileObject(archer->getProjectile());
-			Objlist.push_back(newObj);
+			Objlist.push_back(new ProjectileObject(archer->getProjectile()));
 	}
 
 	if (dynamic_cast<NPC*>(object))
@@ -395,7 +417,7 @@ void Level::InteractionBetween(Player* player, GObject* object)
 	{
 		MovableObject* mobject = dynamic_cast<MovableObject*>(object);
 
-		if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (player->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - player->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x)) < player->AtackRange() || player->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + player->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w ) - (hb2->x)) < player->AtackRange()))
+		if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (player->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - player->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - player->AtackRange())) < (player->AtackRange() + 4) || player->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + player->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + player->AtackRange()) - (hb2->x)) < player->AtackRange() + 4))
 		{
 			if (player->IsAtacking())
 			{
@@ -413,28 +435,121 @@ void Level::InteractionBetween(Player* player, GObject* object)
 		}
 		return;
 	}
+
+	if (dynamic_cast<ElderScroll*>(object))
+	{
+		ElderScroll* scroll = dynamic_cast<ElderScroll*>(object);
+		
+		if(!scroll->CanBePicked()) return;
+
+		if (hb1->y + hb1->h <= hb2->y) return;
+
+		if (hb1->y >= hb2->y + hb2->h) return;
+
+		if (hb1->x + hb1->w <= hb2->x) return;
+
+		if (hb1->x >= hb2->x + hb2->w) return;
+
+		scroll->SetExistenceMode(false);
+		return;
+
+	}
 }
 
 void Level::InteractionBetween(NPC* npc, Player* player)
 {
 	if (!npc || !player) { SDL_Log("Runtime error, when downcasting"); return; }
+
+	if (npc->IsDead() && npc->GetDrop())
+	{
+		Objlist.push_back(new ElderScroll(*(npc->GetDrop())));
+		npc->IsInteracting(false);
+		return;
+	}
+
 	Hitbox* hb1 = npc->GetHitbox();
 	Hitbox* hb2 = player->GetHitbox();
 
-	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (npc->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < npc->AtackRange() || npc->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange()) )
+	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (npc->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < npc->AtackRange() || npc->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange()))
 	{
 		npc->WantToAtack(true);
+		if (npc->IsAtacking())
+		{
+			npc->IsAtacking(false);
+			player->TakeDamage(npc->DoDamage());
+		}
 	}
-	if (npc->IsAtacking())
+
+	if (dynamic_cast<Boss*>(npc))
 	{
-		npc->IsAtacking(false);
-		player->TakeDamage(npc->DoDamage());
+		Boss* boss = dynamic_cast<Boss*>(npc);
+		if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (boss->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - boss->getSecondRange())) && ((hb2->x + hb2->w) - (hb1->x - boss->getSecondRange())) < boss->getSecondRange() || boss->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + boss->getSecondRange()) > (hb2->x)) && ((hb1->x + hb1->w + boss->getSecondRange()) - (hb2->x)) < boss->getSecondRange()))
+		{
+			if (dynamic_cast<DeathBringer*>(boss))
+			{
+				DeathBringer* dboss = dynamic_cast<DeathBringer*>(boss);
+				dboss->WantToUseAbility(true);
+				Hitbox* hb1 = dboss->getAbilityHitbox();
+
+				if (!dboss->IsAbilitySpawnCoordsSet())
+				{
+					dboss->SetAbilitySpawnCoords({(int)hb2->x + hb2->w/2 - hb1->w/2, (int)hb2->y + hb2->h - hb1->h });
+				}
+				if (dboss->UsingAbility() && !dboss->IsAtacking())
+				{
+
+					if (!(hb1->y + hb1->h <= hb2->y || hb1->y >= hb2->y + hb2->h || hb1->x + hb1->w <= hb2->x || hb1->x >= hb2->x + hb2->w))
+					{
+						player->TakeDamage(dboss->DoDamage());
+					}
+				}
+			}
+			if (dynamic_cast<SlimeBoss*>(boss))
+			{
+				boss->WantToAtack(true);
+				if (boss->IsAtacking())
+				{
+					boss->IsAtacking(false);
+					SlimeBoss* sboss = dynamic_cast<SlimeBoss*>(boss);
+					Objlist.push_back(new ProjectileObject(sboss->getProjectile(Positioning::Top)));
+					Objlist.push_back(new ProjectileObject(sboss->getProjectile(Positioning::Middle)));
+					Objlist.push_back(new ProjectileObject(sboss->getProjectile(Positioning::Bottom)));
+				}
+			}
+			if (dynamic_cast<FireDemon*>(boss))
+			{
+				FireDemon* fboss = dynamic_cast<FireDemon*>(boss);
+				Objlist.push_back(new ProjectileObject(fboss->getProjectile()));
+			}
+
+		}
 	}
 }
+
+//void Level::InteractionBetween(Boss* boss, Player* player)
+//{
+//	if (!boss || !player) { SDL_Log("Runtime error, when downcasting"); return; }
+//
+//	Hitbox* hb1 = boss->GetHitbox();
+//	Hitbox* hb2 = player->GetHitbox();
+//
+//	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (boss->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - boss->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - boss->AtackRange())) < boss->AtackRange() || boss->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + boss->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + boss->AtackRange()) - (hb2->x)) < boss->AtackRange()))
+//	{
+//		boss->WantToAtack(true);
+//		if (boss->IsAtacking())
+//		{
+//			boss->IsAtacking(false);
+//			player->TakeDamage(boss->DoDamage());
+//		}
+//	}
+//
+//}
 
 void Level::InteractionBetween(ProjectileObject* projectile, GObject* object)
 {
 	if (!projectile) { SDL_Log("Runtime error, when downcasting"); return; }
+
+	if (!object->IsCollidingWithObj()) { return; }
 
 	Hitbox* hb1 = projectile->GetHitbox();
 	Hitbox* hb2 = object->GetHitbox();

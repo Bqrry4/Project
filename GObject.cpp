@@ -7,6 +7,8 @@
 //	//this->ObjState = ObjState;
 //}
 
+void CollideFlags::operator~() { *this = { false }; }
+
 bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
 	if (xmlElem == nullptr)
@@ -16,7 +18,14 @@ bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 		{
 			xmlElem = xmlElem->NextSiblingElement();
 		}
+
+		if (xmlElem == nullptr)
+		{
+			SDL_Log("Invalid Parameters for parsing that object");
+			return false;
+		}
 	}
+
 
 	xmlElem->QueryFloatAttribute("x", &hitbox.x);
 	xmlElem->QueryFloatAttribute("y", &hitbox.y);

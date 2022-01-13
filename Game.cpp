@@ -38,11 +38,13 @@ void Game::Init(const char *title, int x, int y, Uint32 flags)
 
 	srand(SDL_GetTicks() % 802); //Set randomizer seed
 
-	menu = new Menu * [2];
+	menu = new Menu * [MenuesCount];
 
-	menu[0] = new MainMenu;
-	menu[0]->SwitchTrigger();
-	menu[1] = new PauseMenu;
+	menu[Main] = new MainMenu;
+	menu[Main]->SwitchTrigger();
+	menu[Pause] = new PauseMenu;
+	menu[GameOver] = new GameOverMenu;
+	menu[LevelClear] = new LevelClearMenu;
 
 	//level = new Level;
 }
@@ -87,10 +89,10 @@ void Game::Update()
 
 void Game::MainMenuLoop()
 {
-	while (menu[0]->IsTriggered())
+	while (menu[Main]->IsTriggered())
 	{
-		menu[0]->Update();
-		menu[0]->Draw();
+		menu[Main]->Update();
+		menu[Main]->Draw();
 	}
 	if(Game::IsRunning && !Level::IsLoaded) LoadLevel();
 }
@@ -98,20 +100,49 @@ void Game::PuaseMenuLoop()
 {
 	if (Input::GetInstance().KeyState(SDL_SCANCODE_ESCAPE))
 	{
-		menu[1]->SwitchTrigger();
+		menu[Pause]->SwitchTrigger();
 	}
 
-	while (menu[1]->IsTriggered())
+	while (menu[Pause]->IsTriggered())
 	{
 		SystemTimer::GetInstance()->Ticks();
-		menu[1]->Update();
-		menu[1]->Draw();
+		menu[Pause]->Update();
+		menu[Pause]->Draw();
 	}
 
 }
+
+void Game::GameOverMenuLoop()
+{
+	if (Level::IsLoaded && Player::PlayerDead)
+	{
+		menu[GameOver]->SwitchTrigger();
+	}
+
+	while (menu[GameOver]->IsTriggered())
+	{
+		menu[GameOver]->Update();
+		menu[GameOver]->Draw();
+	}
+}
+
+void Game::LevelClearMenuLoop()
+{
+	if (Level::IsLoaded && Boss::IsDefeated)
+	{
+		menu[LevelClear]->SwitchTrigger();
+	}
+
+	while (menu[LevelClear]->IsTriggered())
+	{
+		menu[LevelClear]->Update();
+		menu[LevelClear]->Draw();
+	}
+}
+
 void Game::SwitchToMainLoop()
 {
-	menu[0]->SwitchTrigger();
+	menu[Main]->SwitchTrigger();
 }
 
 void Game::LoadLevel()
