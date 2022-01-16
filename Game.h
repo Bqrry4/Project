@@ -2,6 +2,7 @@
 //#include "TextureManager.h"
 #include "Level.h"
 #include "Menu.h"
+#include <fstream>
 
 class Game {
 
@@ -32,12 +33,19 @@ public:
 	~Game()
 	{
 		delete level;
-		for (int i = 0; i < MenuesCount; ++i)
+		level = nullptr;
+		if (menu)
 		{
-			delete menu[i];
+			for (int i = 0; i < MenuesCount; ++i)
+			{
+				delete menu[i];
+			}
+			delete menu;
+			menu = nullptr;
 		}
-		delete menu;
 	}
+
+	static std::fstream Log;  //Log output
 
 	inline static Game& GetInstance() { static Game instance; return instance; } 	//Using Meyers's Singleton
 	inline SDL_Renderer* GetRender() { return render; }

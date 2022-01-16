@@ -6,11 +6,6 @@
 #include <vector>
 
 
-enum Textures {
-	Tex_Player,
-	Tex_Dirt
-};
-
 class TextureManager {
 
 	//std::map<Uint16, SDL_Texture*> TextureMap;

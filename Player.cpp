@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "SystemTimer.h"
 #include "Input.h"
+#include "Game.h"
+#include <sstream>
 
 #define Height 70.f
 #define TimetoApex 0.4f
@@ -15,7 +17,7 @@ const float xSpeed = 238;
 
 bool Player::PlayerDead = false;
 
-Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id, SDL_Scancode Key_Hanging_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0.0f), a(0.1f),HangMode(false), HangRange(50)
+Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Key_Left_id, SDL_Scancode Key_Right_id, SDL_Scancode Key_Atack_id, SDL_Scancode Key_Ability_Save_id, SDL_Scancode Key_Ability_Load_id, SDL_Scancode Key_Hanging_id) : AnimatedObj(), vx(0), vy(0), CheckPointPosition({ NULL,NULL }), AbilityDT(0), a(0.1f),HangMode(false), HangRange(50), MaxHealth(0), HPrecDT(0.f), SFX(nullptr)
 {
     Interact = true;
     collide.Is = true;
@@ -30,15 +32,63 @@ Player::Player(SDL_Scancode Key_Up_id, SDL_Scancode Key_Down_id, SDL_Scancode Ke
     this->Key_Ability_Load_id = Key_Ability_Load_id;
     this->Key_Hanging_id = Key_Hanging_id;
 
-    HP = 10000;
-    AP = 50;
-    AtRange = 13;
 }
 
 
+bool Player::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
+{
+    if (xmlElem == nullptr)
+    {
+        throw std::string("Invalid Parameters for parsing that object");
+    }
+
+    try {
+        AnimatedObj::Parse(root, iObject, xmlElem);
+    }
+    catch (std::string s) { throw s; }
+
+    xmlElem->QueryIntAttribute("HP", &HP);
+    xmlElem->QueryIntAttribute("AP", &AP);
+
+    xmlElem->QueryIntAttribute("AtackRange", &AtRange);
+
+    if (HP <= 0 || AP < 0 || AtRange < 0)
+        throw std::string("Invalid Object parameters \n");
+
+    HP /= Level::DifficultyAmpl;
+    AP /= Level::DifficultyAmpl;
+
+
+    if (xmlElem->Attribute("sounds"))
+    {
+
+        SFX = new __int8[frame.aStates];
+
+
+        std::string vector = xmlElem->Attribute("sounds");
+        std::istringstream stream(vector);
+        std::string value;
+
+        for (int i = 0; i < frame.aStates; ++i)
+        {
+            std::getline(stream, value, ';');
+            try
+            {
+                SFX[i] = std::stoi(value);
+            }
+            catch (...)
+            {
+                throw std::string("Invalid state array parameters \n");
+            }
+        }
+    }
+
+    return true;
+}
+
 void Player::Movement()
 {
-    float dt = SystemTimer::GetInstance()->GetDt();
+    float dt = SystemTimer::GetInstance().GetDt();
 
     __int8 movement = (Input::GetInstance().KeyState(Key_Right_id) - Input::GetInstance().KeyState(Key_Left_id));
     
@@ -81,7 +131,7 @@ void Player::Movement()
 
 void Player::Jump()
 {
-    float dt = SystemTimer::GetInstance()->GetDt();
+    float dt = SystemTimer::GetInstance().GetDt();
 
     if (collide.Below)
     {
@@ -129,9 +179,17 @@ void Player::Update()
     if (ObjState != (Uint16)PlayerState::Atack && ObjState != (Uint16)PlayerState::Ability && ObjState != (Uint16)PlayerState::Dying) {
         Jump();
         Movement();
+        HealthRecovery();
     }
     if(!IsDead())
         Ability();
+}
+
+void Player::Draw(const SDL_Point* CameraTranslate)
+{
+    AnimatedObj::Draw(CameraTranslate);
+    if (!IsDead())
+        DrawHealthBar();
 }
 
 //void Player::Atack()
@@ -175,14 +233,20 @@ void Player::Ability()
             AMode = true;
             frame.aFrame = 0;
 
-            CheckPointPosition.x = hitbox.x;
-            CheckPointPosition.y = hitbox.y;
+            if (SFX)
+            {
+                Sound* sound;
+                if (sound = SoundManager::GetInstance().getSound(SFX[(Uint16)PlayerState::Ability]))
+                    sound->Play();
+            }
+
+            CheckPointPosition = { (int)hitbox.x, (int)hitbox.y };
             //std::swap(hitbox.x, hitbox.y);
             //std::swap(vx, vy);
         }
         if (AbilityDT < 5000) //  Ability delay 5 sec
         {
-            AbilityDT += SystemTimer::GetInstance()->GetDt() * 1000;
+            AbilityDT += SystemTimer::GetInstance().GetDt() * 1000;
         }
         else {
             if (Input::GetInstance().KeyState(Key_Ability_Load_id) && collide.Below) //Apply Position
@@ -191,9 +255,12 @@ void Player::Ability()
                 //AMode = true;
                 //frame.aFrame = 0;
                 AbilityDT = 0;
+                if (CheckPointPosition.x != NULL && CheckPointPosition.y != NULL)
+                {
+                    hitbox.x = CheckPointPosition.x;
+                    hitbox.y = CheckPointPosition.y;
+                }
 
-                hitbox.x = CheckPointPosition.x;
-                hitbox.y = CheckPointPosition.y;
             }
         }
     }
@@ -225,5 +292,27 @@ void Player::IsDiyng()
                 PlayerDead = true;
             }
         }
+    }
+}
+
+void Player::DrawHealthBar()
+{
+    if (!MaxHealth) MaxHealth = HP;
+
+    float ratio = (float)HP / MaxHealth;
+
+    SDL_Texture* texture = TextureManager::FillTransparent(nullptr, { 0xFE, 0, 0, 0 }, { 0, 0, (int)(80 * ratio), 20 });
+    TextureManager::Draw(texture, { 0, 0, (int)(80 * ratio), 20 }, { 10, Game::ScreenHeigth() - 30, (int)(80 * ratio), 20 });
+    SDL_DestroyTexture(texture);
+}
+
+void Player::HealthRecovery()
+{
+    if (HP < MaxHealth) // 1HP per second
+    {
+        HPrecDT += SystemTimer::GetInstance().GetDt();
+
+        HP += (int)HPrecDT;
+        HPrecDT -= (int)HPrecDT;
     }
 }

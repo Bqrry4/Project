@@ -15,7 +15,7 @@ protected:
 	SDL_Point mouse;
 	bool MouseClick;
 
-	virtual void Events();
+	virtual void Events(SDL_Event*);
 	virtual void ActionHandler(SDL_Event*) = 0;
 
 public:
@@ -48,6 +48,7 @@ class MainMenu : public Menu
 		Return
 	};
 	SDL_Texture* Background;
+	Music BackMusic;
 
 	bool WasClosed;
 
@@ -68,7 +69,6 @@ class PauseMenu : public Menu
 		MainMenu,
 		Exit
 	};
-	int timeElapsed;
 
 	void ActionHandler(SDL_Event* event);
 

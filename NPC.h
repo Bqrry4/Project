@@ -14,14 +14,14 @@ enum class NPCState {
 
 class NPC : public AnimatedObj, public Entity
 {
+	ElderScroll* drop;
+
+protected:
 	float vx, vy;
 
 	float LastXPosition;
 	int deplasament, deplDt;
 
-	ElderScroll* drop;
-
-protected:
 	bool AtackIntention : 1;
 
 	void RandDeplasament() { deplasament = abs((rand() % 5) * (int)hitbox.x /* + (int)hitbox.x*/); }
@@ -34,10 +34,6 @@ public:
 		Interact = true;
 		collide.Is = true;
 		collide.WithOthers = true;
-		HP = rand() % 20 + 100;
-
-		AP = 50;
-		AtRange = 12;
 	}
 	virtual ~NPC()
 	{

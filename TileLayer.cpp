@@ -14,14 +14,22 @@ bool TileLayer::Parse(XMLElement* root, int iLayer)
 		xmlElem = xmlElem->NextSiblingElement();
 	}
 
-	texture = TextureManager::Load(xmlElem->Attribute("texture")); // Check for nullptr
+	texture = TextureManager::Load(xmlElem->Attribute("texture"));
+
 	xmlElem->QueryIntAttribute("columns", &assetColumn);
 	xmlElem->QueryIntAttribute("width", &LayerWidth);
 	xmlElem->QueryIntAttribute("height", &LayerHeigth);
 	xmlElem->QueryIntAttribute("tilewidth", &tileW);
 	xmlElem->QueryIntAttribute("tileheight", &tileH);
 
+	if (assetColumn <= 0 || LayerWidth <= 0 || LayerHeigth <= 0 || tileW <= 0 || tileH <= 0)
+		throw std::string("Invalid TileLayer dimensions parameters \n");
+
 	XMLElement* xmlData = xmlElem->FirstChildElement("data");
+
+	if (!xmlData || !xmlData->GetText())
+		throw std::string("No data for map matrix \n");
+
 	std::string matrix(xmlData->GetText());
 	std::istringstream stream(matrix);
 	std::string value;

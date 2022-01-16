@@ -1,13 +1,8 @@
 #include "GObject.h"
-
-//GObject::GObject(Uint16 type, Hitbox hitbox)
-//{
-//	this->hitbox = hitbox;
-//	this->type = type;
-//	//this->ObjState = ObjState;
-//}
+#include <string>
 
 void CollideFlags::operator~() { *this = { false }; }
+
 
 bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
@@ -21,8 +16,7 @@ bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
 		if (xmlElem == nullptr)
 		{
-			SDL_Log("Invalid Parameters for parsing that object");
-			return false;
+			throw std::string("Invalid Parameters for parsing that object");
 		}
 	}
 
@@ -36,6 +30,9 @@ bool GObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 	TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
 
 	type = xmlElem->UnsignedAttribute("TextureId");
+
+	if (hitbox.w <= 0 || hitbox.h <= 0 || TOffsetX < 0 || TOffsetY < 0 || type < 0)
+		throw std::string("Invalid Object dimensions parameters \n");
 
 	flip = (SDL_RendererFlip)xmlElem->UnsignedAttribute("rotation");
 

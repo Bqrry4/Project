@@ -1,5 +1,6 @@
 #include "ElderScroll.h"
 #include "SystemTimer.h"
+#include <string>
 
 int ElderScroll::InstanceCount = 0;
 
@@ -25,9 +26,16 @@ bool ElderScroll::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
         {
             xmlElem = xmlElem->NextSiblingElement();
         }
+		if (xmlElem == nullptr)
+		{
+			throw std::string("Invalid Parameters for parsing that object");
+		}
     }
 
-    if (!GObject::Parse(root, iObject, xmlElem)) { return false; }
+	try {
+		GObject::Parse(root, iObject, xmlElem);
+	}
+	catch (std::string s) { throw s; }
 
     return true;
 }
@@ -39,7 +47,7 @@ bool ElderScroll::CanBePicked()
 
 void ElderScroll::Update()
 {
-	float dt = SystemTimer::GetInstance()->GetDt();
+	float dt = SystemTimer::GetInstance().GetDt();
 
 	if (PickDt <= 500)
 	{

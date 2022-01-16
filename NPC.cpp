@@ -1,10 +1,8 @@
 #include "NPC.h"
 #include "SystemTimer.h"
+#include "Level.h"
+#include <string>
 
-#define Height 70.f
-#define TimetoApex 0.4f
-
-const float SpeedY = 2.0f * Height / TimetoApex;
 const float SpeedX = 50;
 
 
@@ -17,15 +15,39 @@ bool NPC::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 		{
 			xmlElem = xmlElem->NextSiblingElement();
 		}
+		if (xmlElem == nullptr)
+		{
+			throw std::string("Invalid Parameters for parsing that object");
+		}
 	}
 
-	if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
+	try {
+		AnimatedObj::Parse(root, iObject, xmlElem);
+	}
+	catch (std::string s) { throw s; }
+	
+	xmlElem->QueryIntAttribute("HP", &HP);
+	xmlElem->QueryIntAttribute("AP", &AP);
+
+	xmlElem->QueryIntAttribute("AtackRange", &AtRange);
+
+	if (HP <= 0 || AP <= 0 || AtRange < 0)
+		throw std::string("Invalid Object parameters \n");
+
+	HP *= Level::DifficultyAmpl;
+	AP *= Level::DifficultyAmpl;
+
 
 	const char* type = xmlElem->Attribute("drop");
 	if (type != nullptr && !strcmp(type, "Yes"))
 	{
 		drop = new ElderScroll;
-		if (!drop->Parse(root, 0)) { return false; }
+
+		try {
+			drop->Parse(root, 0);
+		}
+		catch (std::string s) { throw s; }
+
 	}
 
 	return true;
@@ -33,7 +55,7 @@ bool NPC::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
 void NPC::Movement()
 {
-	float dt = SystemTimer::GetInstance()->GetDt();
+	float dt = SystemTimer::GetInstance().GetDt();
 
 	if (!collide.Below)
 	{
@@ -49,7 +71,7 @@ void NPC::Movement()
 	{
 		vx = 0.0f;
 		ObjState = (Uint16)NPCState::Repaos;
-		deplDt += SystemTimer::GetInstance()->GetDt() * 1000;
+		deplDt += SystemTimer::GetInstance().GetDt() * 1000;
 	}
 	else
 	{

@@ -7,6 +7,7 @@
 int Game::screenWidth = 1024;
 int Game::screenHeigth = 768;
 
+
 int main(int argc, char* argv[])
 {
 	Game::GetInstance().Init("mY Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SDL_WINDOW_SHOWN);
@@ -19,7 +20,7 @@ int main(int argc, char* argv[])
 		Game::GetInstance().Events();
 		Game::GetInstance().Update();
 		Game::GetInstance().Render();
-		SystemTimer::GetInstance()->Ticks();
+		SystemTimer::GetInstance().Ticks();
 	}
 
 	Game::GetInstance().Clean();

@@ -7,6 +7,7 @@
 #include "LongRangeNPC.h"
 #include "Boss.h"
 #include <list>
+#include "SoundManager.h"
 
 enum class PlayerClasses {
 
@@ -18,6 +19,8 @@ enum class PlayerClasses {
 
 class Level
 {
+	Music BackMusic;
+
 	int mapWidth;
 	int mapHeigth;
 	Camera* camera;
@@ -40,7 +43,6 @@ class Level
 	void InteractionBetween(GObject*, GObject*);
 	void InteractionBetween(Player*, GObject*);
 	void InteractionBetween(NPC*, Player*);
-	//void InteractionBetween(Boss*, Player*);
 	void InteractionBetween(ProjectileObject*, GObject*);
 	//void InteractionBetween(ProjectileObject*, NPC*);
 

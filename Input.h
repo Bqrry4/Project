@@ -2,6 +2,9 @@
 #include <SDL.h>
 
 class Input {
+
+	SDL_Event event;
+
 	const Uint8* currentKeyStates;
 	//SDL_Point mouse;
 
@@ -15,13 +18,13 @@ class Input {
 
 	void UpdateKeyStates();
 public:
-	~Input()
-	{}
+	~Input() = default;
 
 	inline static Input& GetInstance() { static Input instance; return instance; }
 
 	void Read();
 
+	bool WasPressed(SDL_Scancode);
 	bool KeyState(SDL_Scancode key);
 
 	//bool MouseClicked();

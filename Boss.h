@@ -11,7 +11,7 @@ enum class Positioning{
 class Boss : public NPC
 {
 	int MaxHealth;
-	int SecondATRange = 300;
+	int SecondATRange = 300;								//////////////////thisss
 
 	void DrawHealthBar();
 protected:
@@ -105,22 +105,23 @@ public:
 class FireDemon : public Boss
 {
 	enum States {
-		Repaos,
-		Run,
+		Levitate,
 		Atacking,
-		TakeDamage,
 		Dying
 	};
 
 	ProjectileObject wolf;
+
+	void Atack();
+	void Movement();
 public:
 	FireDemon()
 	{}
 	~FireDemon() = default;
 
-	ProjectileObject getProjectile();
+	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
+	void Update();
 
-	void Atack()
-	{}
+	ProjectileObject getProjectile();
 	bool IsDead() { return ObjState == Dying; }
 };

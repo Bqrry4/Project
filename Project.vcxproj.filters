@@ -99,6 +99,9 @@
     <ClCompile Include="FixObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureManager.h">
@@ -182,10 +185,24 @@
     <ClInclude Include="FixObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\map1.tmx">
       <Filter>assets</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="assets\level1.xml">
+      <Filter>assets</Filter>
+    </Xml>
+    <Xml Include="assets\level2.xml">
+      <Filter>assets</Filter>
+    </Xml>
+    <Xml Include="assets\level3.xml">
+      <Filter>assets</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

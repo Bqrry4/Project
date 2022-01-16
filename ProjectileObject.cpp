@@ -1,5 +1,6 @@
 #include "ProjectileObject.h"
 #include "SystemTimer.h"
+#include <string>
 
 bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
@@ -11,18 +12,18 @@ bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
         {
             xmlElem = xmlElem->NextSiblingElement();
         }
+        if (xmlElem == nullptr)
+        {
+            throw std::string("Invalid Parameters for parsing that object");
+        }
     }
 
-    if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
+    try {
+        AnimatedObj::Parse(root, iObject, xmlElem);
+    }
+    catch (std::string s) { throw s; }
 
-    xmlElem->QueryIntAttribute("w", &hitbox.w);
-    xmlElem->QueryIntAttribute("h", &hitbox.h);
     xmlElem->QueryFloatAttribute("vx", &vx);
-
-    TOffsetX = xmlElem->UnsignedAttribute("TextureOffsetX");
-    TOffsetY = xmlElem->UnsignedAttribute("TextureOffsetY");
-
-    type = xmlElem->UnsignedAttribute("TextureId");
 
     return true;
 }
@@ -37,7 +38,7 @@ void ProjectileObject::AdaptPosition(SDL_Point pos, Direction direction)
 
 void ProjectileObject::Movement()
 {
-    float dt = SystemTimer::GetInstance()->GetDt();
+    float dt = SystemTimer::GetInstance().GetDt();
     hitbox.x += (int)direction * vx * dt;
 }
 

@@ -3,7 +3,7 @@
 
 bool TextureManager::Init()
 {
-	Font = TTF_OpenFont("assets/RobotoMono-Bold.ttf", 100);
+	Font = TTF_OpenFont("assets/fonts/RobotoMono-Bold.ttf", 100);
 	if (!Font)
 	{
 		SDL_Log("Failed to load font! %s", TTF_GetError());
@@ -17,21 +17,21 @@ bool TextureManager::Load(const char* path, Uint16 type)
 {
 	if (path == nullptr)
 	{
-		SDL_Log("Invalid texture path");
+		Game::Log << "Invalid texture path";
 		return false;
 	}
 
 	SDL_Surface* loadedSurface = IMG_Load(path);
 	if (!loadedSurface)
 	{
-		SDL_Log("Failed loading image %s \n", SDL_GetError());
+		Game::Log << "Failed loading image " << SDL_GetError() << '\n';
 		return false;
 	}
 
 	SDL_Texture* newTexture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRender(), loadedSurface);
 	if (!newTexture)
 	{
-		SDL_Log("Failed converting texture %s \n", SDL_GetError());
+		Game::Log << "Failed converting texture " << SDL_GetError() << '\n';
 		return false;
 	}
 	SDL_FreeSurface(loadedSurface);
@@ -45,14 +45,14 @@ SDL_Texture* TextureManager::Load(const char* path, int* w, int* h)
 {
 	if (path == nullptr)
 	{
-		SDL_Log("Invalid texture path");
+		Game::Log << "Invalid texture path";
 		return nullptr;
 	}
 
 	SDL_Surface* loadedSurface = IMG_Load(path);
 	if (!loadedSurface)
 	{
-		SDL_Log("Failed loading image %s \n", SDL_GetError());
+		Game::Log << "Failed loading image " << SDL_GetError() << '\n';
 		return nullptr;
 	}
 	if (w != nullptr)
@@ -67,7 +67,7 @@ SDL_Texture* TextureManager::Load(const char* path, int* w, int* h)
 	SDL_Texture* newTexture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRender(), loadedSurface);
 	if (!newTexture)
 	{
-		SDL_Log("Failed converting texture %s \n", SDL_GetError());
+		Game::Log << "Failed converting texture " << SDL_GetError() << '\n';
 		return nullptr;
 	}
 	SDL_FreeSurface(loadedSurface);
@@ -79,7 +79,7 @@ SDL_Texture* TextureManager::Load(const char* label, SDL_Color color, SDL_Rect d
 {
 	if (label == nullptr)
 	{
-		SDL_Log("Invalid label to texture");
+		Game::Log << "Invalid label to texture";
 		return nullptr;
 	}
 
@@ -87,7 +87,7 @@ SDL_Texture* TextureManager::Load(const char* label, SDL_Color color, SDL_Rect d
 	SDL_Surface* loadedSurface = TTF_RenderText_Solid(Font, label, color);
 	if (!loadedSurface)
 	{
-		SDL_Log("Failed loading image %s \n", SDL_GetError());
+		Game::Log << "Failed loading image  " << SDL_GetError() << '\n';
 		return nullptr;
 	}
 
@@ -100,7 +100,7 @@ SDL_Texture* TextureManager::Load(const char* label, SDL_Color color, SDL_Rect d
 	SDL_Texture* Texture = SDL_CreateTextureFromSurface(Game::GetInstance().GetRender(), loadedSurface);
 	if (!Texture)
 	{
-		SDL_Log("Failed converting texture %s \n", SDL_GetError());
+		Game::Log << "Failed converting texture " << SDL_GetError() << '\n';
 		return nullptr;
 	}
 	SDL_FreeSurface(loadedSurface);
@@ -154,6 +154,16 @@ void TextureManager::Draw(Uint16 type, SDL_Rect srcRect, SDL_Rect destRect, SDL_
 
 	if (destRect.x + destRect.w > 0 && destRect.x < Game::ScreenWidth() && destRect.y + destRect.h > 0 && destRect.y < Game::ScreenHeigth()) //Render only if it is on the screen
 	{
+		SDL_Texture* texture;
+		if (type >= TextureMap.size())
+		{
+			texture = nullptr;
+		}
+		else
+		{
+			texture = TextureMap[type];
+		}
+
 		SDL_RenderCopyEx(Game::GetInstance().GetRender(), TextureMap[type], &srcRect, &destRect, 0, nullptr, flip);
 	}
 }

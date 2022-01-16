@@ -9,8 +9,9 @@ Input::Input()
 
 void Input::Read()
 {
-	SDL_Event event;
-	SDL_PollEvent(&event);
+	SDL_Event ev;
+	SDL_PollEvent(&ev);
+	event = ev;
 
 	switch (event.type) {
 	case SDL_QUIT:
@@ -32,6 +33,15 @@ void Input::Read()
 	//	SDL_GetMouseState(&mouse.x, &mouse.y);
 	//	break;
 	}
+}
+
+bool Input::WasPressed(SDL_Scancode key)
+{
+	if (event.type == SDL_KEYUP && event.key.keysym.scancode == key)
+	{
+		return true;
+	}
+	return false;
 }
 
 void Input::UpdateKeyStates()

@@ -17,6 +17,7 @@ public:
 	}
 	~MovableObject() = default;
 	void Update();
+	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 
 	void Move(Direction);
 };

@@ -1,40 +1,46 @@
 #include "Game.h"
 #include "TextureManager.h"
+#include "SoundManager.h"
 #include "Input.h"
 #include "Menu.h"
 #include "SystemTimer.h"
 
 
+std::fstream Game::Log = std::fstream("log/Log.txt", std::fstream::trunc | std::fstream::out);
+
+
 void Game::Init(const char *title, int x, int y, Uint32 flags)
 {
 
-	if (!SDL_Init(SDL_INIT_EVERYTHING) && IMG_Init(IMG_INIT_PNG) && !TTF_Init())
+	if (!SDL_Init(SDL_INIT_EVERYTHING) && IMG_Init(IMG_INIT_PNG) && !TTF_Init() && !Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048))
 	{
-		SDL_Log("System initialysed \n");
+		Log << "System initialysed \n";
 		window = SDL_CreateWindow(title, x, y, screenWidth, screenHeigth, flags);
 		if (!window)
 		{
-			SDL_Log("Failed window creation %s \n", SDL_GetError());
+			Log << "Failed window creation " << SDL_GetError() << '\n';
 			return;
 		}
 		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 		if (!render)
 		{
-			SDL_Log("Failed render creation %s \n", SDL_GetError());
+			Log << "Failed render creation " << SDL_GetError() << '\n';
 			return;
 		}
 		if (!TextureManager::GetInstance().Init())
 		{
-			SDL_Log("Failed to init TextureManager, see for missing files");
+			Log << "Failed to init TextureManager, see for missing files";
 			return;
 		}
 		IsRunning = true;
 	}
 	else
 	{
-		SDL_Log("SDL failed initialisation \n");
+		Log << "SDL failed initialisation \n";
 		return;
 	}
+
+	Mix_VolumeMusic(10);
 
 	srand(SDL_GetTicks() % 802); //Set randomizer seed
 
@@ -46,18 +52,20 @@ void Game::Init(const char *title, int x, int y, Uint32 flags)
 	menu[GameOver] = new GameOverMenu;
 	menu[LevelClear] = new LevelClearMenu;
 
-	//level = new Level;
 }
 
 void Game::Clean()
 {
+	Game::~Game();
 	TextureManager::GetInstance().Clean();
+	SoundManager::GetInstance().Clean();
 	SDL_DestroyRenderer(render);
 	SDL_DestroyWindow(window);
 	TTF_Quit();
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
-	SDL_Log("System cleaned, quiting...");
+	Log << "System cleaned, quiting...";
 }
 void Game::Quit()
 {
@@ -65,7 +73,6 @@ void Game::Quit()
 }
 void Game::Events()
 {
-
 	Input::GetInstance().Read();
 }
 void Game::Render()
@@ -98,20 +105,19 @@ void Game::MainMenuLoop()
 }
 void Game::PuaseMenuLoop()
 {
-	if (Input::GetInstance().KeyState(SDL_SCANCODE_ESCAPE))
+	if (Input::GetInstance().WasPressed(SDL_SCANCODE_ESCAPE))
 	{
 		menu[Pause]->SwitchTrigger();
 	}
 
 	while (menu[Pause]->IsTriggered())
 	{
-		SystemTimer::GetInstance()->Ticks();
+		SystemTimer::GetInstance().Ticks();
 		menu[Pause]->Update();
 		menu[Pause]->Draw();
 	}
 
 }
-
 void Game::GameOverMenuLoop()
 {
 	if (Level::IsLoaded && Player::PlayerDead)
@@ -125,7 +131,6 @@ void Game::GameOverMenuLoop()
 		menu[GameOver]->Draw();
 	}
 }
-
 void Game::LevelClearMenuLoop()
 {
 	if (Level::IsLoaded && Boss::IsDefeated)
@@ -139,7 +144,6 @@ void Game::LevelClearMenuLoop()
 		menu[LevelClear]->Draw();
 	}
 }
-
 void Game::SwitchToMainLoop()
 {
 	menu[Main]->SwitchTrigger();
@@ -148,12 +152,23 @@ void Game::SwitchToMainLoop()
 void Game::LoadLevel()
 {
 	level = new Level;
-	level->Load();
+	try {
+		if (!level->Load())
+		{
+			Quit();
+		}
+
+	}
+	catch (std::string s)
+	{
+		Log << s.c_str();
+		Quit();
+	}
 }
 void Game::UnloadLevel()
 {	
 	delete level;
 	level = nullptr;
-	Level::IsLoaded = false;
 	TextureManager::GetInstance().Clean();
+	SoundManager::GetInstance().Clean();
 }

@@ -1,12 +1,14 @@
 #include "Swordsman.h"
 #include "Input.h"
 #include "SystemTimer.h"
+#include "Level.h"
+
 
 void Swordsman::Atack()
 {
     if(AtackDT < 500) //  Swordsman atack delay 0.5 sec
     {
-        AtackDT += SystemTimer::GetInstance()->GetDt() * 1000;
+        AtackDT += SystemTimer::GetInstance().GetDt() * 1000;
         return;
     }
     if (ObjState != (Uint16)PlayerState::Atack) {
@@ -16,6 +18,13 @@ void Swordsman::Atack()
             ObjState = (Uint16)PlayerState::Atack;
             AMode = true;
             frame.aFrame = 0;
+
+            if (SFX)
+            {
+                Sound* sound;
+                if (sound = SoundManager::GetInstance().getSound(SFX[(Uint16)PlayerState::Atack]))
+                    sound->Play();
+            }
         }
     }
     else

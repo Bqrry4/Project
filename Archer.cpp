@@ -1,21 +1,28 @@
 #include "Archer.h"
 #include "Input.h"
 #include "SystemTimer.h"
+#include "Level.h"
+#include <string>
 
 bool Archer::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 {
     if (xmlElem == nullptr)
     {
-        SDL_Log("Invalid Parameters for parsing that object");
-        return false;
+        throw std::string("Invalid Parameters for parsing that object");
     }
 
-    if (!AnimatedObj::Parse(root, iObject, xmlElem)) { return false; }
+    try {
+        Player::Parse(root, iObject, xmlElem);
+    }
+    catch (std::string s) { throw s; }
 
     xmlElem->QueryIntAttribute("projectilespawnPositionX", &pos1.x);
     xmlElem->QueryIntAttribute("projectilespawnPositionY", &pos1.y);
-
-    if(!arrow.Parse(root, xmlElem->UnsignedAttribute("projectileType"))) { return false; }
+    
+    try {
+        arrow.Parse(root, xmlElem->UnsignedAttribute("projectileType"));
+    }
+    catch (std::string s) { throw s; }
 
 
     return true;
@@ -25,7 +32,7 @@ void Archer::Atack()
 {
     if (AtackDT < 500) //  Swordsman atack delay 0.5 sec
     {
-        AtackDT += SystemTimer::GetInstance()->GetDt() * 1000;
+        AtackDT += SystemTimer::GetInstance().GetDt() * 1000;
         return;
     }
     if (ObjState != (Uint16)PlayerState::Atack) {
@@ -35,6 +42,13 @@ void Archer::Atack()
             ObjState = (Uint16)PlayerState::Atack;
             AMode = true;
             frame.aFrame = 0;
+
+            if (SFX)
+            {
+                Sound* sound;
+                if (sound = SoundManager::GetInstance().getSound(SFX[(Uint16)PlayerState::Atack]))
+                    sound->Play();
+            }
         }
     }
     else

@@ -38,16 +38,20 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
 		if (xmlElem == nullptr)
 		{
-			SDL_Log("Invalid Parameters for parsing that object");
-			return false;
+			throw std::string("Invalid Parameters for parsing that object");
 		}
 	}
 
-
-	if (!GObject::Parse(root, iObject, xmlElem)) { return false; }
+	try {
+		GObject::Parse(root, iObject, xmlElem);
+	}
+	catch(std::string s){ throw s; }
 
 
 	frame.aStates = xmlElem->UnsignedAttribute("states");
+	if(frame.aStates <= 0 || !xmlElem->Attribute("frames"))
+		throw std::string("Invalid Object dimensions parameters \n");
+
 	frame.States = new Uint8[frame.aStates];
 
 
@@ -58,9 +62,15 @@ bool AnimatedObj::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 	for (int i = 0; i < frame.aStates; ++i)
 	{
 		std::getline(stream, value, ';');
-		int converter = std::stoi(value);
-		frame.States[i] = (converter != 0) ? converter : 1;
-
+		try
+		{
+			int converter = std::stoi(value);
+			frame.States[i] = (converter > 0) ? converter : 1;
+		}
+		catch (...)
+		{
+			throw std::string("Invalid state array parameters \n");
+		}
 	}
 
 	return true;
@@ -85,7 +95,7 @@ void AnimatedObj::NextFrame()
 	{
 		if(frame.aFrame < frame.States[ObjState]-1)
 		{
-			timeElapsed += (int)(SystemTimer::GetInstance()->GetDt()*1000);
+			timeElapsed += (int)(SystemTimer::GetInstance().GetDt()*1000);
 			if (timeElapsed / frame.AnimSpeed > 0)
 			{
 				frame.aFrame += timeElapsed / frame.AnimSpeed;

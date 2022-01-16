@@ -1,6 +1,5 @@
 #include "SystemTimer.h"
 #include <SDL.h>
-SystemTimer* SystemTimer::st_Instance = nullptr;
 
 void SystemTimer::Ticks()
 {

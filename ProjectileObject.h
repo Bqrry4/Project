@@ -4,7 +4,8 @@
 
 class ProjectileObject : public AnimatedObj
 {
-	float vx, vy;
+	float vx;
+	//float vy;
 	int lifespan; //deplacement in pixels
 
 	int Damage;
@@ -12,7 +13,7 @@ class ProjectileObject : public AnimatedObj
 	Direction direction;
 
 public:
-	ProjectileObject() : AnimatedObj(), vx(0.0f), vy(0.0f), lifespan(0), Damage(30), direction(Direction::Left)
+	ProjectileObject() : AnimatedObj(), vx(10.0f), lifespan(0), Damage(30), direction(Direction::Left)
 	{
 		Interact = true;
 		collide.Is = true;

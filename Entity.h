@@ -26,7 +26,7 @@ protected:
 	virtual void Atack() = 0;
 	virtual void IsDiyng() = 0;
 public:
-	Entity() : HP(0), AP(0), direction(Direction::Left), AtRange(0), AtackingMode(false), AtackDT(0), AtackFrameTrigger(false)
+	Entity() : HP(10), AP(10), direction(Direction::Left), AtRange(0), AtackingMode(false), AtackDT(0), AtackFrameTrigger(false)
 	{}
 	virtual ~Entity() = default;
 

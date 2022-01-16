@@ -20,7 +20,7 @@ protected:
 	bool AMode : 1; // When true, animation will get stuck on the last frame
 
 public:
-	AnimatedObj() : GObject(), frame({ nullptr, 0, 0, 75 }) , ObjState(0), AMode(false), timeElapsed(0)
+	AnimatedObj() : GObject(), frame({ nullptr, 1, 1, 75 }) , ObjState(0), AMode(false), timeElapsed(0)
 	{}
 	virtual ~AnimatedObj();
 	AnimatedObj(const AnimatedObj& obj);

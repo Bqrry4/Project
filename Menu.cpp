@@ -4,10 +4,10 @@
 
 Menu::Menu() : buttons(nullptr), buttonsCount(0), MenuTrigger(false), mouse({0,0}), MouseClick(false)
 {
-	EventId = SDL_RegisterEvents(1); //Verifica
+	EventId = SDL_RegisterEvents(1);
 	if (EventId == ((Uint32)-1))
 	{
-		SDL_Log("Error event register");
+		SDL_Log("Error event register"); //Throw
 	}
 }
 Menu::~Menu()
@@ -18,12 +18,11 @@ Menu::~Menu()
 	}
 	delete buttons;
 }
-void Menu::Events()
+void Menu::Events(SDL_Event* event)
 {
-	SDL_Event event;
-	while (SDL_PollEvent(&event) != 0)
+	while (SDL_PollEvent(event) != 0)
 	{
-		switch (event.type)
+		switch (event->type)
 		{
 		case SDL_QUIT:
 			Game::GetInstance().Quit();
@@ -39,8 +38,8 @@ void Menu::Events()
 			SDL_GetMouseState(&mouse.x, &mouse.y);
 			break;
 		default:
-			if (event.type == EventId)
-				ActionHandler(&event);
+			if (event->type == EventId)
+				ActionHandler(event);
 			break;
 		}
 	}
@@ -59,23 +58,26 @@ MainMenu::MainMenu() : Menu(), WasClosed(false)
 	buttonsCount = 11;
 	buttons = new Button * [buttonsCount];
 
-	buttons[Play] = new Button(Play, { 242, 304, 540, 160 }, "Play", true, EventId);
-	buttons[Exit] = new Button(Exit, { 710, 604, 340, 160 }, "Exit", true, EventId);
+	buttons[Play] = new Button(Play, { (Game::ScreenWidth() - 540) / 2, (Game::ScreenHeigth() - 160)/2, 540, 160 }, "Play", true, EventId);
+	buttons[Exit] = new Button(Exit, { (Game::ScreenWidth() - 340), (Game::ScreenHeigth() - 160), 340, 160 }, "Exit", true, EventId);
 
-	buttons[Level1] = new Button(Level1, { 262, 48, 540, 160 }, "Level1", false, EventId);
-	buttons[Level2] = new Button(Level2, { 262, 304, 540, 160 }, "Level2", false, EventId);
-	buttons[Level3] = new Button(Level3, { 262, 560, 540, 160 }, "Level3", false, EventId);
+	buttons[Level1] = new Button(Level1, { (Game::ScreenWidth() - 540) / 2, 48, 540, 160 }, "Level1", false, EventId);
+	buttons[Level2] = new Button(Level2, { (Game::ScreenWidth() - 540) / 2, 304, 540, 160 }, "Level2", false, EventId);
+	buttons[Level3] = new Button(Level3, { (Game::ScreenWidth() - 540) / 2, 560, 540, 160 }, "Level3", false, EventId);
 
-	buttons[Easy] = new Button(Easy, { 262, 48, 540, 160 }, "Easy", false, EventId);
-	buttons[Normal] = new Button(Normal, { 262, 304, 540, 160 }, "Normal", false, EventId);
-	buttons[Hard] = new Button(Hard, { 262, 560, 540, 160 }, "Hard", false, EventId);
+	buttons[Easy] = new Button(Easy, { (Game::ScreenWidth() - 540) / 2, 48, 540, 160 }, "Easy", false, EventId);
+	buttons[Normal] = new Button(Normal, { (Game::ScreenWidth() - 540) / 2, 304, 540, 160 }, "Normal", false, EventId);
+	buttons[Hard] = new Button(Hard, { (Game::ScreenWidth() - 540) / 2, 560, 540, 160 }, "Hard", false, EventId);
 
-	buttons[Swordsman] = new Button(Swordsman, { 262, 142, 540, 160 }, "Swordsman", false, EventId);
-	buttons[Archer] = new Button(Archer, { 262, 466, 540, 160 }, "Archer", false, EventId);
+	buttons[Swordsman] = new Button(Swordsman, { (Game::ScreenWidth() - 540) / 2, 142, 540, 160 }, "Swordsman", false, EventId);
+	buttons[Archer] = new Button(Archer, { (Game::ScreenWidth() - 540) / 2, 466, 540, 160 }, "Archer", false, EventId);
 
-	buttons[Return] = new Button(Return, { 890, 660, 80, 80 }, "<", false, EventId);
+	buttons[Return] = new Button(Return, { (Game::ScreenWidth() - 80), (Game::ScreenHeigth() - 80), 80, 80 }, "<", false, EventId);
 
-	Background = TextureManager::Load("assets/menu_background.png");	//Check for missing file!!!!
+	Background = TextureManager::Load("assets/textures/menu_background.png");
+
+	BackMusic.Load("assets/sounds/menu.ogg");
+	BackMusic.Play();
 }
 MainMenu::~MainMenu()
 {
@@ -88,8 +90,10 @@ void MainMenu::Update()
 		WasClosed = false;
 		buttons[Play]->SetActiveMode(true);
 		buttons[Exit]->SetActiveMode(true);
+		BackMusic.Play();
 	}
-	Events();
+	SDL_Event event;
+	Events(&event);
 
 	for (int i = 0; i < buttonsCount; ++i)
 	{
@@ -169,39 +173,30 @@ void MainMenu::Draw()
 	SDL_SetRenderDrawColor(Game::GetInstance().GetRender(), 0xFF, 0xFF, 0xFF, 0xFF);
 	SDL_RenderClear(Game::GetInstance().GetRender());
 
-	TextureManager::Draw(Background, { 0, 0, 1024, 768 }, { 0, 0, 1024, 768 });  /////REFAAAA REDACTEAZA RE
+	TextureManager::Draw(Background, { 0, 0, Game::ScreenWidth(), Game::ScreenHeigth() }, { 0, 0, Game::ScreenWidth(), Game::ScreenHeigth() });
 	DrawButtons();
 
 	SDL_RenderPresent(Game::GetInstance().GetRender());
 }
 
 
-PauseMenu::PauseMenu() : Menu(), timeElapsed(0)
+PauseMenu::PauseMenu() : Menu()
 {
 	buttonsCount = 3;
 	buttons = new Button * [buttonsCount];
 
-	buttons[Resume] = new Button(Resume, { 262, 48, 500, 160 }, "Resume", true, EventId);
-	buttons[MainMenu] = new Button(MainMenu, { 262, 304, 500, 160 }, "MainMenu", true, EventId);
-	buttons[Exit] = new Button(Exit, { 262, 560, 500, 160 }, "Exit", true, EventId);
+	buttons[Resume] = new Button(Resume, { (Game::ScreenWidth() - 500)/2, 48, 500, 160 }, "Resume", true, EventId);
+	buttons[MainMenu] = new Button(MainMenu, { (Game::ScreenWidth() - 500) / 2, 304, 500, 160 }, "MainMenu", true, EventId);
+	buttons[Exit] = new Button(Exit, { (Game::ScreenWidth() - 500) / 2, 560, 500, 160 }, "Exit", true, EventId);
 }
 void PauseMenu::Update()
 {
-	Events();
+	SDL_Event event;
+	Events(&event);
 
-	if (timeElapsed < 500)
+	if (event.type == SDL_KEYUP && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
 	{
-		timeElapsed += SystemTimer::GetInstance()->GetDt() * 1000;
-	}
-	else
-	{ 
-		const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-		if (currentKeyStates[SDL_SCANCODE_ESCAPE])
-		{
-			SDL_Log("Well3");
-			SwitchTrigger();
-			timeElapsed = 0;
-		}
+		SwitchTrigger();
 	}
 
 	for (int i = 0; i < buttonsCount; ++i)
@@ -246,8 +241,8 @@ GameOverMenu::GameOverMenu() : Menu()
 	buttonsCount = 2;
 	buttons = new Button * [buttonsCount];
 
-	buttons[Replay] = new Button(Replay, { 262, 234, 500, 160 }, "Replay", true, EventId);
-	buttons[MainMenu] = new Button(MainMenu, { 262, 490, 500, 160 }, "MainMenu", true, EventId);
+	buttons[Replay] = new Button(Replay, { (Game::ScreenWidth() - 500) / 2, 234, 500, 160 }, "Replay", true, EventId);
+	buttons[MainMenu] = new Button(MainMenu, { (Game::ScreenWidth() - 500) / 2, 490, 500, 160 }, "MainMenu", true, EventId);
 }
 void GameOverMenu::ActionHandler(SDL_Event* event)
 {
@@ -268,7 +263,8 @@ void GameOverMenu::ActionHandler(SDL_Event* event)
 }
 void GameOverMenu::Update()
 {
-	Events();
+	SDL_Event event;
+	Events(&event);
 
 	for (int i = 0; i < buttonsCount; ++i)
 	{
@@ -280,7 +276,7 @@ void GameOverMenu::Draw()
 {
 	DrawButtons();
 
-	TextureManager::Draw(Label, { 0, 0, 500, 160 }, { 262, 28, 500, 160 });
+	TextureManager::Draw(Label, { 0, 0, 500, 160 }, { (Game::ScreenWidth() - 500) / 2, 28, 500, 160 });
 	SDL_RenderPresent(Game::GetInstance().GetRender());
 }
 
@@ -292,9 +288,9 @@ LevelClearMenu::LevelClearMenu() : Menu()
 	buttonsCount = 3;
 	buttons = new Button * [buttonsCount];
 
-	buttons[NextLevel] = new Button(NextLevel, { 262, 188, 540, 140 }, "NextLevel", true, EventId);
-	buttons[Replay] = new Button(Replay, { 262, 384, 540, 140 }, "Reply", true, EventId);
-	buttons[MainMenu] = new Button(MainMenu, { 262, 580, 540, 140 }, "MainMenu", true, EventId);
+	buttons[NextLevel] = new Button(NextLevel, { (Game::ScreenWidth() - 540) / 2, 188, 540, 140 }, "NextLevel", true, EventId);
+	buttons[Replay] = new Button(Replay, { (Game::ScreenWidth() - 540) / 2, 384, 540, 140 }, "Reply", true, EventId);
+	buttons[MainMenu] = new Button(MainMenu, { (Game::ScreenWidth() - 540) / 2, 580, 540, 140 }, "MainMenu", true, EventId);
 }
 void LevelClearMenu::ActionHandler(SDL_Event* event)
 {
@@ -319,7 +315,8 @@ void LevelClearMenu::ActionHandler(SDL_Event* event)
 }
 void LevelClearMenu::Update()
 {
-	Events();
+	SDL_Event event;
+	Events(&event);
 
 	for (int i = 0; i < buttonsCount; ++i)
 	{
@@ -331,6 +328,6 @@ void LevelClearMenu::Draw()
 {
 	DrawButtons();
 
-	TextureManager::Draw(Label, { 0, 0, 800, 100 }, { 112, 28, 800, 100 });
+	TextureManager::Draw(Label, { 0, 0, 800, 100 }, { (Game::ScreenWidth() - 800) / 2, 28, 800, 100 });
 	SDL_RenderPresent(Game::GetInstance().GetRender());
 }

@@ -5,7 +5,7 @@ void ShortRangeNPC::Atack()
 {
 	if (AtackDT < 250) // Atack delay 0.25 sec
 	{
-		AtackDT += SystemTimer::GetInstance()->GetDt() * 1000;
+		AtackDT += SystemTimer::GetInstance().GetDt() * 1000;
 		return;
 	}
 	if (AtackIntention)

@@ -11,7 +11,7 @@ bool Background::Parse(XMLElement* root, int iLayer)
 		xmlElem = xmlElem->NextSiblingElement();
 	}
 
-	texture = TextureManager::Load(xmlElem->Attribute("texture"), &Width, &Height); // Check for nullptr
+	texture = TextureManager::Load(xmlElem->Attribute("texture"), &Width, &Height); //Mb throw a exception
 	xmlElem->QueryFloatAttribute("scrollratio", &Scrollratio);
 	
 	return true;

@@ -3,6 +3,7 @@
 #include <iostream>
 using namespace tinyxml2;
 #include "Level.h"
+#include "Game.h"
 #include "TileLayer.h"
 #include "Background.h"
 #include "ElderScroll.h"
@@ -26,6 +27,7 @@ Level::~Level()
 	for (GObject* obj : Objlist) { delete obj; }
 	Objlist.clear();
 	delete camera;
+	IsLoaded = false;
 }
 
 bool Level::Load()
@@ -34,10 +36,10 @@ bool Level::Load()
 	switch (Levelid)
 	{
 	case 0:
-		SDL_Log("Wrong loading");
+		Game::Log << "Wrong loading";
 		return false;
 	case 1:
-		path = std::string("assets/map1.tmx");
+		path = std::string("assets/level1.xml");
 		break;
 	case 2:
 		path = std::string("assets/level2.xml");
@@ -51,10 +53,10 @@ bool Level::Load()
 
 	XMLDocument lvlDocument;
 
-	if (lvlDocument.LoadFile(path.c_str()))  ///ERROR HANDLING DONT FORGET!
+	if (lvlDocument.LoadFile(path.c_str()))
 	{
 
-		SDL_Log("Loading XML file error, %d", lvlDocument.ErrorID());
+		Game::Log << "Loading XML file error, " << lvlDocument.ErrorID();
 		return false;
 	}
 
@@ -63,15 +65,28 @@ bool Level::Load()
 
 	XMLElement* mapRoot = root->FirstChildElement("map");
 
-	mapRoot->QueryIntAttribute("width", &mapHeigth);
-	mapRoot->QueryIntAttribute("height", &mapWidth);
-	camera = new Camera(mapHeigth, mapWidth);
+	mapRoot->QueryIntAttribute("width", &mapWidth);
+	mapRoot->QueryIntAttribute("height", &mapHeigth);
+
+	if (mapWidth <= 0 || mapHeigth <= 0)
+		throw std::string("Invalid map dimension parameters \n");
+
+	camera = new Camera(mapWidth, mapHeigth);
 
 	//parsing TileLayers
 	XMLElement* LayerRoot = mapRoot->FirstChildElement("Layers");
+	
+	if(!LayerRoot)
+		throw std::string("Bad XML, no Layers root found \n");
+
 	LayerRoot->QueryIntAttribute("physicalLayer", &physicLayerid);
 
+
 	XMLElement* xmlElem = LayerRoot->FirstChildElement("layer");
+	
+	if (!xmlElem)
+		throw std::string("Bad XML, no layer found \n");
+
 	for (LayerCount; xmlElem != NULL; ++LayerCount, xmlElem = xmlElem->NextSiblingElement());
 	
 	layers = new Layer*[LayerCount];
@@ -80,8 +95,9 @@ bool Level::Load()
 	for (int i = 0; i < LayerCount; ++i)
 	{
 		const char* type = xmlElem->Attribute("type");
-		if (type == nullptr) { SDL_Log("Bad stream. Cannot properly read from file."); return false; }
+		if (type == nullptr) { throw std::string("Bad stream. Cannot properly read from file. \n");}
 
+		layers[i] = nullptr;
 		if (!strcmp(type, "TileLayer"))
 		{
 			layers[i] = new TileLayer;
@@ -90,42 +106,92 @@ bool Level::Load()
 		{
 			layers[i] = new Background;
 		}
-		if (!layers[i]->Parse(LayerRoot, i))
-		{
-			return false;
+
+		if (!layers[i])
+			throw std::string("Incorect type specifier for layer \n");
+
+		//if (!layers[i]->Parse(LayerRoot, i))
+		//{
+		//	return false;
+		//}
+		try {
+			layers[i]->Parse(LayerRoot, i);
 		}
+		catch(std::string s) { throw s; }
+		
+		
 		xmlElem = xmlElem->NextSiblingElement();
 	}
 
 	//Loading object textures
+	XMLElement* SoundRoot = root->FirstChildElement("Sounds");
+
+	if (SoundRoot)
+	{
+		if (xmlElem = SoundRoot->FirstChildElement("levelmusic"))
+		{
+			BackMusic.Load(xmlElem->Attribute("path"));
+			BackMusic.Play();
+		}
+
+		xmlElem = SoundRoot->FirstChildElement("sound");
+		while (xmlElem != NULL)
+		{
+			Soundtype mode = Soundtype::Chunk;
+			if (const char* type = xmlElem->Attribute("type"))
+			{
+				if (!strcmp(type, "music"))
+				{
+					mode = Soundtype::Music;
+				}
+			}
+			if (!SoundManager::GetInstance().Load(xmlElem->Attribute("path"), mode))
+				throw std::string("Failed to load sound from path \n");
+
+			xmlElem = xmlElem->NextSiblingElement();
+		}
+	}
+
+
+	//Loading object textures
 	XMLElement* TexRoot = root->FirstChildElement("Textures");
 
-	xmlElem = TexRoot->FirstChildElement("texture");
-	while (xmlElem != NULL)
-	{
-		if (!TextureManager::GetInstance().Load(xmlElem->Attribute("path"), xmlElem->IntAttribute("id"))) { return false; }
+	//if (!TexRoot)
+	//	throw std::string("Bad XML, no Textures root found \n");
 
-		xmlElem = xmlElem->NextSiblingElement();
+	if (TexRoot)
+	{
+		xmlElem = TexRoot->FirstChildElement("texture");
+		while (xmlElem != NULL)
+		{
+			if (!TextureManager::GetInstance().Load(xmlElem->Attribute("path"), xmlElem->IntAttribute("id")))
+				throw std::string("Failed to load texture from path \n");
+
+			xmlElem = xmlElem->NextSiblingElement();
+		}
 	}
 
 	//parsing GameObjects
 	XMLElement* ObjRoot = root->FirstChildElement("GameObjects");
-
+	if (!ObjRoot)
+		throw std::string("Bad XML, no GameObjects root found \n");
 
 	for (xmlElem = ObjRoot->FirstChildElement("object"); xmlElem != NULL; xmlElem = xmlElem->NextSiblingElement("object"))
 	{
 		const char* type = xmlElem->Attribute("type");
-		if (type == nullptr) { SDL_Log("Bad stream. Cannot properly read from file."); return false; }
+		if (type == nullptr) { throw std::string("Bad stream. Cannot properly read from file."); }
 
 		if (!strcmp(type, "Player"))
 		{
 			XMLElement* subElem = xmlElem->FirstChildElement("playerClass");
 
-			if (subElem == nullptr) { SDL_Log("Bad stream. Cannot properly read from file."); return false; }
+			if (subElem == nullptr) { throw std::string("Bad stream. Cannot properly read from file."); }
 
 			while (subElem != NULL)
 			{
 				const char* Class = subElem->Attribute("type");
+
+				if (Class == nullptr) { throw std::string("Bad stream. Cannot properly read from file."); }
 
 				if (!strcmp(Class, "Swordsman") && (PlayerClass == PlayerClasses::Swordswman))
 				{
@@ -194,11 +260,7 @@ bool Level::Load()
 			Objlist.push_back(new FixedObject);
 		}
 
-		//if (!strcmp(type, "Object"))
-		//{
-		//	Objlist.push_back(new GObject);
-		//}
-		if (!Objlist.back()->Parse(ObjRoot, 0, xmlElem))
+		if (!Objlist.empty() && !Objlist.back()->Parse(ObjRoot, 0, xmlElem))
 		{
 			return false;
 		}
@@ -220,27 +282,33 @@ void Level::Draw()
 		layers[i]->Draw(camera->GetCameraPos());
 	}
 
-	for (GObject* obj : Objlist)
+	if (!Objlist.empty())
 	{
-		obj->Draw(camera->GetCameraPos());
+		for (GObject* obj : Objlist)
+		{
+			obj->Draw(camera->GetCameraPos());
+		}
 	}
 }
 
 void Level::Update()
 {
-	Collision();
-
-	for (std::list<GObject*>::iterator obj = Objlist.begin();  obj != Objlist.end(); obj++)
+	if (!Objlist.empty())
 	{
-		(*obj)->Update();
-		if (!(*obj)->shouldExist())
-		{
-			delete (*obj);
-			obj = --Objlist.erase(obj);
-		}
-	}
+		Collision();
 
-	camera->Update(Objlist.front()->GetHitbox());
+		for (std::list<GObject*>::iterator obj = Objlist.begin(); obj != Objlist.end(); obj++)
+		{
+			(*obj)->Update();
+			if (!(*obj)->shouldExist())
+			{
+				delete (*obj);
+				obj = --Objlist.erase(obj);
+			}
+		}
+
+		camera->Update(Objlist.front()->GetHitbox());
+	}
 }
 
 
@@ -267,7 +335,8 @@ void Level::Collision()
 
 			if (physicLayer->GetGrid(((hitbox->y + hitbox->h ) / tileHeight), hitbox->x / tileWidth) || physicLayer->GetGrid((hitbox->y + hitbox->h) / tileHeight, (hitbox->x + hitbox->w) / tileWidth))
 			{
-				hitbox->y = hitbox->y - ((hitbox->y + hitbox->h) - ((int)(hitbox->y + hitbox->h) / tileHeight) * tileHeight);
+				//hitbox->y = hitbox->y - ((hitbox->y + hitbox->h) - ((int)(hitbox->y + hitbox->h) / tileHeight) * tileHeight);
+				hitbox->y = - hitbox->h + ((int)(hitbox->y + hitbox->h) / tileHeight) * tileHeight;
 				obj->setFlagBelow(true);
 			}
 			else
@@ -325,7 +394,6 @@ void Level::Collision()
 }
 
 
-
 void Level::InteractionBetween(GObject* first, GObject* second)
 {
 	if (dynamic_cast <ProjectileObject*>(first))
@@ -357,14 +425,14 @@ void Level::InteractionBetween(GObject* first, GObject* second)
 			//second->setFlagBelow(true);
 		}
 
-		if (hb1->y + hb1->h > hb2->y && hb1->y + hb1->h - hb2->y < 4 && ((hb1->x + hb1->w) - hb2->x) > 4 && ((hb2->x + hb2->w) - hb1->x) > 4)
+		if (hb1->y + hb1->h > hb2->y && hb1->y + hb1->h - hb2->y < hb2->h && ((hb1->x + hb1->w) - hb2->x) > 4 && ((hb2->x + hb2->w) - hb1->x) > 4)
 		{
+			hb1->y = hb2->y - hb1->h; //PushBack up
 			first->setFlagBelow(true);
 			//second->setFlagAbove(true);
 		}
 
 	}
-
 
 	if (dynamic_cast <Player*>(first))
 	{
@@ -372,11 +440,6 @@ void Level::InteractionBetween(GObject* first, GObject* second)
 		return;
 	}
 
-	//if (dynamic_cast <Boss*>(first) && dynamic_cast <Player*>(second))
-	//{
-	//	InteractionBetween(dynamic_cast <Boss*>(first), dynamic_cast <Player*>(second));
-	//	return;
-	//}
 
 	if (dynamic_cast <NPC*>(first) && dynamic_cast <Player*>(second))
 	{
@@ -470,7 +533,7 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 	Hitbox* hb1 = npc->GetHitbox();
 	Hitbox* hb2 = player->GetHitbox();
 
-	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (npc->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < npc->AtackRange() || npc->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange()))
+	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (npc->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - npc->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - npc->AtackRange())) < (npc->AtackRange() + 4) || npc->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + npc->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + npc->AtackRange()) - (hb2->x)) < npc->AtackRange() + 4))
 	{
 		npc->WantToAtack(true);
 		if (npc->IsAtacking())
@@ -525,25 +588,6 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 		}
 	}
 }
-
-//void Level::InteractionBetween(Boss* boss, Player* player)
-//{
-//	if (!boss || !player) { SDL_Log("Runtime error, when downcasting"); return; }
-//
-//	Hitbox* hb1 = boss->GetHitbox();
-//	Hitbox* hb2 = player->GetHitbox();
-//
-//	if (((hb1->y + hb1->h) - hb2->y) > 4 && ((hb2->y + hb2->h) - hb1->y) > 4 && (boss->ViewDirection() == Direction::Left && ((hb2->x + hb2->w) > (hb1->x - boss->AtackRange())) && ((hb2->x + hb2->w) - (hb1->x - boss->AtackRange())) < boss->AtackRange() || boss->ViewDirection() == Direction::Right && ((hb1->x + hb1->w + boss->AtackRange()) > (hb2->x)) && ((hb1->x + hb1->w + boss->AtackRange()) - (hb2->x)) < boss->AtackRange()))
-//	{
-//		boss->WantToAtack(true);
-//		if (boss->IsAtacking())
-//		{
-//			boss->IsAtacking(false);
-//			player->TakeDamage(boss->DoDamage());
-//		}
-//	}
-//
-//}
 
 void Level::InteractionBetween(ProjectileObject* projectile, GObject* object)
 {
