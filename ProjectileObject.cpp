@@ -24,6 +24,7 @@ bool ProjectileObject::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
     catch (std::string s) { throw s; }
 
     xmlElem->QueryFloatAttribute("vx", &vx);
+    xmlElem->QueryIntAttribute("damage", &Damage);
 
     return true;
 }

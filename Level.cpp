@@ -123,6 +123,9 @@ bool Level::Load()
 		xmlElem = xmlElem->NextSiblingElement();
 	}
 
+	if(physicLayerid < 0 || physicLayerid > LayerCount || !dynamic_cast<TileLayer*>(layers[physicLayerid]))
+		throw std::string("Incorect type specifier for layer \n");
+
 	//Loading object textures
 	XMLElement* SoundRoot = root->FirstChildElement("Sounds");
 
@@ -560,7 +563,6 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 				}
 				if (dboss->UsingAbility() && !dboss->IsAtacking())
 				{
-
 					if (!(hb1->y + hb1->h <= hb2->y || hb1->y >= hb2->y + hb2->h || hb1->x + hb1->w <= hb2->x || hb1->x >= hb2->x + hb2->w))
 					{
 						player->TakeDamage(dboss->DoDamage());
@@ -582,7 +584,12 @@ void Level::InteractionBetween(NPC* npc, Player* player)
 			if (dynamic_cast<FireDemon*>(boss))
 			{
 				FireDemon* fboss = dynamic_cast<FireDemon*>(boss);
-				Objlist.push_back(new ProjectileObject(fboss->getProjectile()));
+				fboss->WantToUseAbility(true);
+
+				if (fboss->UsingAbility() && !fboss->IsAtacking())
+				{
+					Objlist.push_back(new ProjectileObject(fboss->getProjectile()));
+				}
 			}
 
 		}

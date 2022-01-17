@@ -10,10 +10,10 @@
 		<layer type="TileLayer" texture="assets/textures/tiles.png" width="80" height="40" tilewidth="32" tileheight="32" tilecount="630" columns="35">
 			  <data encoding="csv">
 1,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,1,
-151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
-151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
-151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
-151,0,0,145,145,145,145,145,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,604,535,535,535,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
+151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
+151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
+151,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,569,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
+151,0,0,145,145,145,145,145,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,604,535,535,535,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,74,
 151,0,0,0,0,0,0,0,145,145,145,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,220,220,220,220,220,220,220,220,220,220,0,0,0,0,0,0,0,0,0,220,220,220,1,
 151,0,0,0,0,0,0,0,535,1,1,145,145,145,145,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,220,220,220,220,220,220,220,220,220,220,220,220,1,1,1,1,1,1,1,1,220,220,220,220,220,220,220,220,220,220,1,1,1,1,
 151,0,0,0,0,0,0,535,535,1,1,1,1,1,145,145,145,145,145,145,145,145,145,145,145,145,145,145,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -83,20 +83,25 @@
 			<playerClass type="Archer" HP="100" x="160" y="60" w="12" h="32" TextureId="2" projectileType="0" projectilespawnPositionX="17" projectilespawnPositionY="16" states="6" frames="2;5;10;15;5;7" sounds="-1;-1;-1;1;2;-1" TextureOffsetX ="14" TextureOffsetY="4"></playerClass>
 		</object>
 		
-		<object type="ShortRangeNPC" HP="100" AP="5" AtackRange="13" drop="Yes" x ="400" y="60" w="16" h="24" TextureId="3" rotation="1" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" ></object>
-		<object type="ShortRangeNPC" HP="30" AP="35" AtackRange="13" drop ="Yes" x ="300" y="60" w="18" h="32" TextureId="4" rotation="1" states="4" frames="4;12;13;13" TextureOffsetX="22" TextureOffsetY="7" ></object>
+		<object type="ShortRangeNPC" HP="100" AP="10" AtackRange="13" drop="Yes" x ="120" y="220" w="16" h="24" TextureId="3" rotation="1" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" ></object>
+		<object type="ShortRangeNPC" HP="130" AP="35" AtackRange="12" drop ="Yes" x ="2270" y="1180" w="18" h="32" TextureId="4" rotation="1" states="4" frames="4;12;13;13" TextureOffsetX="22" TextureOffsetY="7" ></object>
+		<object type="ShortRangeNPC" HP="100" AP="10" AtackRange="11" drop="Yes" x ="1010" y="220" w="16" h="24" TextureId="3" rotation="1" states="4" frames="11;13;17;15" TextureOffsetX="12" TextureOffsetY="8" ></object>
+		<object type="ShortRangeNPC" HP="130" AP="35" AtackRange="12" drop ="Yes" x ="2290" y="350" w="18" h="32" TextureId="4" rotation="1" states="4" frames="4;12;13;13" TextureOffsetX="22" TextureOffsetY="7" ></object>
+
 		
-		<object type="ElderScroll" x ="2000" y="226" w="15" h="17" TextureId="7"></object>
-		<object type="ElderScroll" x ="1290" y="1186" w="15" h="17" TextureId="7"></object>
+		<object type="ElderScroll" x ="1250" y="95" w="15" h="17" TextureId="7"></object>
+		<object type="ElderScroll" x ="220" y="190" w="15" h="17" TextureId="7"></object>
+		<object type="ElderScroll" x ="2400" y="500" w="15" h="17" TextureId="7"></object>
+
 
 		<object type="MovableObject" vx="200" x ="270" y="130" w="15" h="15" TextureId="9"></object>
-		<object type="MovableObject" vx="100" x ="150" y="60" w="44" h="44" TextureId="10"></object>
+		<object type="MovableObject" vx="100" x ="1750" y="160" w="44" h="44" TextureId="10"></object>
 		<object type="MovableObject" vx="100" x ="1190" y="1020" w="44" h="44" TextureId="10"></object>
 		
-		<object type="SlimeBoss" HP="900" AP="30" AtackRange="13" SecondRange="53" x ="700" y="40" w="60" h="72" TextureId="5" projectileType="1" rotation="1" states="5" frames="6;12;15;5;22" TextureOffsetX="114" TextureOffsetY="44"></object>
+		<object type="SlimeBoss" HP="900" AP="30" AtackRange="20" SecondRange="53" x ="300" y="1100" w="60" h="72" TextureId="5" projectileType="1" rotation="1" states="5" frames="6;12;15;5;22" TextureOffsetX="114" TextureOffsetY="44"></object>
 
 		<Projectile damage="10" w="20" h="3" vx="350" TextureId="6" states="1" frames="1" ></Projectile>
-		<Projectile damage="15" w="16" h="9" vx="255" TextureId="11" states="1" frames="3" TextureOffsetX ="2"></Projectile>
+		<Projectile damage="5" w="16" h="9" vx="255" TextureId="11" states="1" frames="3" TextureOffsetX ="2"></Projectile>
 		<Drop type="ElderScroll" w="17" h="18" TextureId="8" ></Drop>
 		
 </GameObjects>

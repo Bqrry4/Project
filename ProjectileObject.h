@@ -13,7 +13,7 @@ class ProjectileObject : public AnimatedObj
 	Direction direction;
 
 public:
-	ProjectileObject() : AnimatedObj(), vx(10.0f), lifespan(0), Damage(30), direction(Direction::Left)
+	ProjectileObject() : AnimatedObj(), vx(10.0f), lifespan(0), Damage(0), direction(Direction::Right)
 	{
 		Interact = true;
 		collide.Is = true;
