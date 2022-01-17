@@ -26,5 +26,3 @@ int main(int argc, char* argv[])
 	Game::GetInstance().Clean();
 	return 0;
 }
-
-//Rezolva cu destructorii!

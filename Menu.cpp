@@ -289,7 +289,7 @@ LevelClearMenu::LevelClearMenu() : Menu()
 	buttons = new Button * [buttonsCount];
 
 	buttons[NextLevel] = new Button(NextLevel, { (Game::ScreenWidth() - 540) / 2, 188, 540, 140 }, "NextLevel", true, EventId);
-	buttons[Replay] = new Button(Replay, { (Game::ScreenWidth() - 540) / 2, 384, 540, 140 }, "Reply", true, EventId);
+	buttons[Replay] = new Button(Replay, { (Game::ScreenWidth() - 540) / 2, 384, 540, 140 }, "Replay", true, EventId);
 	buttons[MainMenu] = new Button(MainMenu, { (Game::ScreenWidth() - 540) / 2, 580, 540, 140 }, "MainMenu", true, EventId);
 }
 void LevelClearMenu::ActionHandler(SDL_Event* event)
@@ -317,6 +317,14 @@ void LevelClearMenu::Update()
 {
 	SDL_Event event;
 	Events(&event);
+	if (Level::Levelid < 3)
+	{
+		buttons[NextLevel]->SetActiveMode(true);
+	}
+	else
+	{
+		buttons[NextLevel]->SetActiveMode(false);
+	}
 
 	for (int i = 0; i < buttonsCount; ++i)
 	{

@@ -31,6 +31,7 @@ bool NPC::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
 
 	xmlElem->QueryIntAttribute("AtackRange", &AtRange);
 
+
 	if (HP <= 0 || AP <= 0 || AtRange < 0)
 		throw std::string("Invalid Object parameters \n");
 
