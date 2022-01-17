@@ -37,33 +37,6 @@ void Boss::Update()
 	}
 	else return;
 }
-bool Boss::Parse(XMLElement* root, int iObject, XMLElement* xmlElem)
-{
-	if (xmlElem == nullptr)
-	{
-		xmlElem = root->FirstChildElement("object");
-		for (int i = 0; i < iObject; ++i)
-		{
-			xmlElem = xmlElem->NextSiblingElement();
-		}
-
-		if (xmlElem == nullptr)
-		{
-			throw std::string("Invalid Parameters for parsing that object");
-		}
-	}
-
-	try {
-		NPC::Parse(root, iObject, xmlElem);
-	}
-	catch (std::string s) { throw s; }
-
-	xmlElem->QueryIntAttribute("SecondRange", &SecondATRange);
-
-	if (SecondATRange < 0)
-		throw std::string("Invalid Object parameters \n");
-	return true;
-}
 
 
 void DeathBringer::Atack()
@@ -387,39 +360,6 @@ void FireDemon::Atack()
 			}
 		}
 	}
-	else {
-		if (AbilityAtackIntention)
-		{
-			if (ObjState != Levitate)
-			{
-				ObjState = Levitate;
-				AMode = true;
-				frame.aFrame = 0;
-			}
-			else
-			{
-				if (frame.aFrame == frame.States[ObjState] - 1)
-				{
-					AMode = false;
-					ObjState = Levitate;
-					AtackingWithAbility = false;
-					AtackDT = 0;
-					AtackFrameTrigger = false;
-					AbilityAtackIntention = false;
-
-				}
-				if (frame.aFrame == frame.States[ObjState] / 2 && !AtackFrameTrigger)
-				{
-					AtackingWithAbility = true;
-					AtackFrameTrigger = true;
-				}
-				else
-				{
-					AtackingWithAbility = false;
-				}
-			}
-		}
-	}
 }
 void FireDemon::Movement()
 {
@@ -514,27 +454,6 @@ void FireDemon::Update()
 				Movement();
 			}
 			Atack();
-		}
-	}
-}
-void FireDemon::IsDiyng()
-{
-	if (HP <= 0)
-	{
-		if (ObjState != Dying)
-		{
-			ObjState = Dying;
-			collide.WithOthers = false;
-			AMode = true;
-			frame.aFrame = 0;
-		}
-		else
-		{
-			//Delete the obj or not?
-			if (frame.aFrame == frame.States[ObjState] - 1)
-			{
-				Boss::IsDefeated = true;
-			}
 		}
 	}
 }

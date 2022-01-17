@@ -164,7 +164,7 @@ void TextureManager::Draw(Uint16 type, SDL_Rect srcRect, SDL_Rect destRect, SDL_
 			texture = TextureMap[type];
 		}
 
-		SDL_RenderCopyEx(Game::GetInstance().GetRender(), texture, &srcRect, &destRect, 0, nullptr, flip);
+		SDL_RenderCopyEx(Game::GetInstance().GetRender(), TextureMap[type], &srcRect, &destRect, 0, nullptr, flip);
 	}
 }
 

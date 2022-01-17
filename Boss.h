@@ -11,14 +11,14 @@ enum class Positioning{
 class Boss : public NPC
 {
 	int MaxHealth;
-	int SecondATRange;
+	int SecondATRange = 300;								//////////////////thisss
 
 	void DrawHealthBar();
 protected:
 	bool Summoned;
 
 public:
-	Boss() : Summoned(false), MaxHealth(0), SecondATRange(0)
+	Boss() : Summoned(false), MaxHealth(0)
 	{
 		Interact = false;
 		~collide;
@@ -27,7 +27,6 @@ public:
 
 	static bool IsDefeated;
 
-	bool Parse(XMLElement* root, int iObject = 0, XMLElement* xmlElem = nullptr);
 	virtual void Draw(const SDL_Point* CameraTranslate = nullptr);
 	virtual void Update();
 
@@ -113,14 +112,10 @@ class FireDemon : public Boss
 
 	ProjectileObject wolf;
 
-	bool AbilityAtackIntention;
-	bool AtackingWithAbility;
-
 	void Atack();
 	void Movement();
-	void IsDiyng();
 public:
-	FireDemon() : AbilityAtackIntention(false), AtackingWithAbility(false)
+	FireDemon()
 	{}
 	~FireDemon() = default;
 
@@ -129,6 +124,4 @@ public:
 
 	ProjectileObject getProjectile();
 	bool IsDead() { return ObjState == Dying; }
-	void WantToUseAbility(bool value) { AbilityAtackIntention = value; }
-	inline bool UsingAbility() { return	AtackingWithAbility; };
 };
