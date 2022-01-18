@@ -343,8 +343,8 @@ ProjectileObject FireDemon::getProjectile()
 {
 	SDL_Point point;
 	(direction == Direction::Left) ?
-		(point = { (int)hitbox.x + hitbox.w, (int)hitbox.y + hitbox.h / 2 })
-		: (point = { (int)hitbox.x, (int)hitbox.y + hitbox.h / 2 });
+		(point = { (int)hitbox.x, (int)hitbox.y + hitbox.h / 2 }) :
+		(point = { (int)hitbox.x + hitbox.w, (int)hitbox.y + hitbox.h / 2 });
 	wolf.AdaptPosition(point, direction);
 
 	return wolf;

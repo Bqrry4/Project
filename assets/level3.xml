@@ -99,7 +99,7 @@
 		<object type="MovableObject" vx="100" x ="1190" y="1020" w="44" h="44" TextureId="10"></object>
 		<object type="MovableObject" vx="100" x ="260" y="890" w="44" h="44" TextureId="10"></object>
 		
-		<object type="FireDemon" HP="100" AP="5" AtackRange="32" SecondRange="53" x ="2150" y="1200" w="54" h="80" TextureId="5" projectileType="1" rotation="1" states="3" frames="6;11;6" TextureOffsetX="110" TextureOffsetY="80"></object>
+		<object type="FireDemon" HP="1000" AP="10" AtackRange="32" SecondRange="170" x ="2150" y="1100" w="54" h="80" TextureId="5" projectileType="1" rotation="1" states="3" frames="6;11;6" TextureOffsetX="110" TextureOffsetY="80"></object>
 
 		<Projectile damage="10" w="20" h="3" vx="350" TextureId="6" states="1" frames="1" ></Projectile>
 		<Projectile damage="30" w="32" h="24" vx="200" TextureId="11" states="1" frames="11" TextureOffsetX ="16" TextureOffsetY ="8"></Projectile>

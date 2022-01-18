@@ -94,7 +94,7 @@
 		<object type="MovableObject" vx="100" x ="1190" y="1020" w="44" h="44" TextureId="10"></object>
 		
 		
-		<object type="DeathBringer" HP="1000" AP="25" AtackRange="13" SecondRange="53" x ="2000" y="1210" w="32" h="54" TextureId="5" rotation="1" states="6" frames="8;8;9;9;15;14" TextureOffsetX="82" TextureOffsetY="38" ></object>
+		<object type="DeathBringer" HP="1000" AP="25" AtackRange="13" SecondRange="60" x ="2000" y="1210" w="32" h="54" TextureId="5" rotation="1" states="6" frames="8;8;9;9;15;14" TextureOffsetX="82" TextureOffsetY="38" ></object>
 
 		<Projectile damage="10" w="20" h="3" vx="350" TextureId="6" states="1" frames="1" ></Projectile>
 		<Drop type="ElderScroll" w="17" h="18" TextureId="8" ></Drop>

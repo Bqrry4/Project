@@ -98,7 +98,7 @@
 		<object type="MovableObject" vx="100" x ="1750" y="160" w="44" h="44" TextureId="10"></object>
 		<object type="MovableObject" vx="100" x ="1190" y="1020" w="44" h="44" TextureId="10"></object>
 		
-		<object type="SlimeBoss" HP="900" AP="30" AtackRange="20" SecondRange="53" x ="300" y="1100" w="60" h="72" TextureId="5" projectileType="1" rotation="1" states="5" frames="6;12;15;5;22" TextureOffsetX="114" TextureOffsetY="44"></object>
+		<object type="SlimeBoss" HP="900" AP="30" AtackRange="20" SecondRange="100" x ="300" y="1100" w="60" h="72" TextureId="5" projectileType="1" rotation="1" states="5" frames="6;12;15;5;22" TextureOffsetX="114" TextureOffsetY="44"></object>
 
 		<Projectile damage="10" w="20" h="3" vx="350" TextureId="6" states="1" frames="1" ></Projectile>
 		<Projectile damage="5" w="16" h="9" vx="255" TextureId="11" states="1" frames="3" TextureOffsetX ="2"></Projectile>

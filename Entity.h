@@ -32,7 +32,7 @@ public:
 
 	inline Direction ViewDirection() { return direction; }
 	inline int DoDamage() { return AP; }
-	inline void TakeDamage(int Damage) { SDL_Log("%d", HP); HP -= Damage; }
+	inline void TakeDamage(int Damage) { HP -= Damage; }
 	inline int AtackRange() { return AtRange; }
 
 	inline bool IsAtacking() { return AtackingMode; }
